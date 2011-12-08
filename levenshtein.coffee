@@ -6,11 +6,8 @@ levenshtein = (str1, str2) ->
   return n  unless m
   return m  unless n
 
+  d[i] = [i] for i in range[0...m]
 
-  i = 0
-  while i <= m
-    d[i] = [ i ]
-    i++
   j = 0
   while j <= n
     d[0][j] = j
@@ -28,4 +25,5 @@ levenshtein = (str1, str2) ->
   d[m][n]
 
 console.log levenshtein("kitten", "sitting")
+console.log levenshtein("stop", "tops")
 console.log levenshtein("rosettacode", "raisethysword")
