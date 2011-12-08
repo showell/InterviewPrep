@@ -2,17 +2,23 @@
 # property that they don't evenly divide any prime numbers outside
 # a given set, such as [2, 3, 5].
 
-min_candidate_idx = (candidates) ->
+min_idx = (arr) ->
   # This is lame, but CS compiles to JS, and JS sucks at sorting 
   # arrays.  Don't waste your time reading this--it just returns
-  # the index of the small tuple in an array, respecting that
-  # the tuples are integers.
+  # the index of the smallest tuple in an array, respecting that
+  # the tuples may contain integers. (Also, I didn't want to introduce any 
+  # dependencies.)
+  less_than = (tup1, tup2) ->
+    i = 0
+    while i < tup2.length
+      return true if tup1[i] < tup2[i]
+      return false if tup1[i] > tup2[i]
+      i += 1
+      
   min_i = 0
-  [n_min, p_min] = candidates[0] 
-  for i in [1...candidates.length]
-    [n, p] = candidates[i]
-    if n < n_min or (n == n_min and p < p_min)
-      [min_i, n_min, p_min] = [i, n, p]
+  for i in [1...arr.length]
+    if less_than arr[i], arr[min_i]
+      min_i = i
   return min_i
 
 next_candidate = (candidate, hamming_numbers) ->
@@ -57,7 +63,7 @@ generate_hamming_sequence = (primes, max_n) ->
   last_number = 1
   while hamming_numbers.length < max_n
     # Get next candidate Hamming Number.
-    i = min_candidate_idx(candidates)
+    i = min_idx(candidates)
     candidate = candidates[i]
     
     # Add to sequence unless it's a duplicate.
