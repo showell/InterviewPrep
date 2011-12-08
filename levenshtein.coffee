@@ -6,8 +6,9 @@ levenshtein = (str1, str2) ->
   return n  unless m
   return m  unless n
 
-  d[i] = [i] for i in range[0...m]
-
+  for i in [0..m]
+    d[i] = [i]
+    
   j = 0
   while j <= n
     d[0][j] = j
