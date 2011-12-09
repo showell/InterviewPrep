@@ -71,6 +71,4 @@ show = (board, n) ->
         s += ". "
     console.log s + "\n"
 
-
-
 nqueens(8)
