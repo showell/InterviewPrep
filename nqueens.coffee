@@ -1,3 +1,25 @@
+# Unlike traditional N-Queens solutions that use recursion, this
+# program attempts to more closely model the "human" algorithm.
+# 
+# In this algorithm, the function keeps placing queens on the board
+# until there is no longer a safe square.  If the 8th queen has been
+# placed, the solution is noted.  If fewer than 8th queens have been
+# placed, then you are at a dead end.  In either case, backtracking occurs.
+# The LAST queen placed on the board gets pulled, then it gets moved
+# to the next safe square.  (We backtrack even after a "good" attempt in 
+# order to get to a new solution.)  This backtracking may repeat itself
+# several times until the original misplaced queen finally is proven to
+# be a dead end.
+#
+# Many N-Queens solutions use lazy logic (along with geometry shortcuts)
+# to determine whether a queen is under attack.  In this algorithm, we
+# are more proactive, essentially updating a sieve every time we lay a
+# queen down.  To make backtracking easier, the sieve uses ref-counts vs.
+# a simple safe/unsafe boolean.
+#
+# We precompute the "attack graph" up front, and then we essentially ignore
+# the geometry of the problem.  This approach, while perhaps suboptimal for
+# queens, probably is more flexible for general "coexistence" problems.
 nqueens = (n) ->
   neighbors = precompute_neighbors(n)
 
