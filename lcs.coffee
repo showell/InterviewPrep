@@ -13,15 +13,14 @@ lcs = (s1, s2) ->
     row = ['']
     for j in [0...len2]
       if s1[i] == s2[j]
-        row[j+1] = prior_row[j] + s1[i]
+        row.push prior_row[j] + s1[i]
       else
         subs1 = row[j]
         subs2 = prior_row[j+1]
         if subs1.length > subs2.length
-          ss = subs1
+          row.push subs1
         else
-          ss = subs2
-        row[j+1] = ss
+          row.push subs2
     prior_row = row
   
   row[len2]
