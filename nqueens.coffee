@@ -1,28 +1,27 @@
 nqueens = (n) ->
   neighbors = precompute_neighbors(n)
-  
-  
 
   board = []
-  for pos in [0...n*n]
+  num_solutions = 0
+  num_backtracks = 0
+  queens = []
+  pos = 0
+
+  for p in [0...n*n]
     board.push 0
   
   attack = (pos, delta=1) ->
     for neighbor in neighbors[pos]
       board[neighbor] += delta
-    
-  num_solutions = 0
-  num_backtracks = 0
-
-  queens = []
-  
-  pos = 0
+      
   backtrack = ->
     pos = queens.pop()
-    attack pos, -1
+    attack pos, -1 # unattack queen you just pulled
     pos += 1
     num_backtracks += 1
 
+  # The following loop finds all 92 solutions to 
+  # the 8-queens problem (for n=8).
   while true  
     if pos >= n*n
       if queens.length == 0
@@ -30,6 +29,7 @@ nqueens = (n) ->
       backtrack()
       continue
 
+    # If a square is empty
     if board[pos] == 0
       attack pos
       queens.push pos
@@ -44,6 +44,10 @@ nqueens = (n) ->
 
 
 precompute_neighbors = (n) ->
+  # For each board position, build a list of all
+  # the board positions that would be under attack if
+  # you placed a queen on it.  This assumes a 1d array
+  # of squares.
   neighbors = []
 
   find_neighbors = (pos) ->
