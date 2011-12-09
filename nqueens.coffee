@@ -16,30 +16,51 @@ attack = (board, pos, n, delta=1) ->
     if i != row
       ref i, col
 
-show = (board) ->
+show = (board, n) ->
+  console.log "\n------"
   for r in [0...n]
     s = ''
     for c in [0...n]
-      s += "#{board[n*r+c]} "
+      if board[n*r+c] == 0
+        s += "Q "
+      else
+        s += ". "
     console.log s + "\n"
 
-n = 8
-board = []
-for i in [1..n*n]
-  board.push 0
+nqueens = (n) ->
+  num_solutions = 0
+  num_backtracks = 0
+  
+  board = []
+  for i in [1..n*n]
+    board.push 0
 
-queens = []
-while true  
-  i = 0
-  while queens.length < n
-    if board[i] == 0
-      attack board, i, n
-      queens.push i
-    i += 1
-    if i >= n*n
-      i = queens.pop()
-      attack board, i, n, -1
-      i += 1
-  break
-console.log queens
-show board
+  queens = []
+  
+  pos = 0
+  backtrack = ->
+    pos = queens.pop()
+    attack board, pos, n, -1
+    pos += 1
+    num_backtracks += 1
+
+  while true  
+    if pos >= n*n
+      if queens.length == 0
+        break
+      backtrack()
+      continue
+
+    if board[pos] == 0
+      attack board, pos, n
+      queens.push pos
+      if queens.length == n
+        num_solutions += 1
+        show board, n
+        backtrack()
+    pos += 1
+    
+  console.log "#{num_solutions} solutions"
+  console.log "#{num_backtracks} backtracks"
+
+nqueens(8)
