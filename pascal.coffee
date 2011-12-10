@@ -1,22 +1,22 @@
 # Artificial constraint: do this in O(N) space).
 
 pascal = (n) ->
-  # how to mutate row:
-  # 1  2   1
-  # 1  2   1  (1)  push
-  # 1  2  (3)  1   2+1
-  # 1 (3)  3   1   1+2
-  row = []
+  width = 6
+  parent_row = []
   for r in [1..n]
+    row = [0] # for convenience
+    
+    # get values from parent cells
+    for c in [0...r-1]
+      row.push parent_row[c] + parent_row[c+1]
     row.push 1
-    s = ws 3*(n-r)
-    c = r - 2
-    while c >= 1
-      row[c] = row[c-1] + row[c]
-      c -= 1
-    for c in [0...r]
-      s += pad 6, "#{row[c]}"
+
+    s = ws (width/2) * (n-r)
+    for c in [1..r]
+      s += pad width, "#{row[c]}"
+    
     console.log s
+    parent_row = row
 
 ws = (n) ->
   s = ''
@@ -30,4 +30,4 @@ pad = (cnt, s) ->
   left = cnt - right
   ws(left) + s + ws(right)
 
-pascal(15)
+pascal(10)
