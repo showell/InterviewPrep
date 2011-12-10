@@ -11,3 +11,8 @@
 # 4 1 2 3
 # 4 3 1 2
 # 4 3 2 1
+#
+# It IS 8 queens (actually rooks).  
+# X _ _ _
+# _ X _ _
+# 
