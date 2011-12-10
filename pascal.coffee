@@ -5,6 +5,8 @@ pascal = (n) ->
     output = (n) -> s += pad width, n
     cell = 1
     output cell
+    # Compute binomial coefficients as you go
+    # across the row.
     for c in [1...r]
       cell *= (r-c) / c
       output cell
