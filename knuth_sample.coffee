@@ -28,4 +28,4 @@ for i in [1..num_trials]
     counts[digit] += 1
 
 for digit in range
-  console.log digit, counts[digit]˜
+  console.log digit, counts[digit]
