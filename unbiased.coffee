@@ -21,7 +21,7 @@ stats = (label, f) ->
     cnt += 1 if f() == 1
   console.log "ratio of 1s: #{cnt / sample_size} [#{label}]"
   
-for n in [5..9]
+for n in [3..6]
   console.log "\n---------- n = #{n}"
   f_biased = biased_rand_function(n)
   f_unbiased = unbiased_function f_biased
