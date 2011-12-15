@@ -1,27 +1,19 @@
 http = require 'http'
 
-is_derangement = (word1, word2) ->
-  for c, i in word1
-    return false if c == word2[i]
-  true
-
-show_longest_derangement = (word_lst) ->
+show_large_anagram_sets = (word_lst) ->
   anagrams = {}
-  max_len = 0
+  max_size = 0
   
   for word in word_lst
-    continue if word.length < max_len
     key = word.split('').sort().join('')
-    if anagrams[key]
-      for prior in anagrams[key]
-        if is_derangement(prior, word)
-          max_len = word.length
-          result = [prior, word]
-    else
-      anagrams[key] = []
+    anagrams[key] ?= []
     anagrams[key].push word
+    size = anagrams[key].length
+    max_size = size if size > max_size
     
-  console.log "Longest derangement: #{result.join ' '}"
+  for key, variations of anagrams
+    if variations.length == max_size
+      console.log variations.join ' '
 
 get_word_list = (process) ->
   options =
@@ -36,5 +28,5 @@ get_word_list = (process) ->
       process s.split '\n'
   req.end()
   
-get_word_list show_longest_derangement
+get_word_list show_large_anagram_sets
   
