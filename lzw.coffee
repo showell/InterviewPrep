@@ -13,16 +13,13 @@ lzw = (s) ->
     # Find word and new_word
     #   word = longest substr already encountered, or next character
     #   new_word = word plus next character, a new substr to encode
-    word = s[i]
+    word = ''
     j = i
-    while true
-      j += 1
-      break if j >= s.length
+    while j < s.length
       new_word = word + s[j]
-      if dct[new_word]
-        word = new_word
-      else
-        break
+      break if !dct[new_word]
+      word = new_word
+      j += 1
 
     # stream out the code for the substring
     stream.push dct[word]
