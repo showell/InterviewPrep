@@ -5,21 +5,35 @@ graph_tour = (graph) ->
   dead_ends = ({} for node in graph)
   tour = [0]
   
-  next_square_to_visit = (i) ->
+  valid_neighbors = (i) ->
+    arr = []
     for neighbor in graph[i]
       continue if visited[neighbor]
       continue if dead_ends[i][neighbor]
-      return neighbor
-    return null
+      arr.push neighbor
+    arr
+    
+  next_square_to_visit = (i) ->
+    arr = valid_neighbors i
+    return null if arr.length == 0
+
+    # We traverse to our neighbor who has the fewest neighbors itself.
+    fewest_neighbors = valid_neighbors(arr[0]).length
+    neighbor = arr[0]
+    for i in [1...arr.length]
+      n = valid_neighbors(arr[i]).length
+      if n < fewest_neighbors
+        fewest_neighbors = n
+        neighbor = arr[i]
+    neighbor
   
-  backtracks = 0
-  while true
+  while tour.length > 0
     current_square = tour[tour.length - 1]
     visited[current_square] = true
     next_square = next_square_to_visit current_square
     if next_square?
       tour.push next_square
-      break if tour.length == graph.length - 3
+      return tour if tour.length == graph.length
       # pessimistically call this a dead end
       dead_ends[current_square][next_square] = true
       current_square = next_square
@@ -28,8 +42,7 @@ graph_tour = (graph) ->
       doomed_square = tour.pop()
       dead_ends[doomed_square] = {}
       visited[doomed_square] = false
-      backtracks += 1
-  tour
+  throw "tour is impossible"
   
 
 knight_graph = (board_width) ->
