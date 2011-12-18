@@ -1,6 +1,12 @@
-graph_tour = (graph) ->
+graph_tours = (graph, max_num_solutions) ->
   # graph is an array of arrays
   # graph[3] = [4, 5] means nodes 4 and 5 are reachable from node 3
+  #
+  # Returns an array of tours (up to max_num_solutions in size), where
+  # each tour is an array of nodes visited in order, and where each
+  # tour visits every node in the graph exactly once.
+  #
+  complete_tours = []
   visited = (false for node in graph)
   dead_ends = ({} for node in graph)
   tour = [0]
@@ -33,7 +39,9 @@ graph_tour = (graph) ->
     next_square = next_square_to_visit current_square
     if next_square?
       tour.push next_square
-      return tour if tour.length == graph.length
+      if tour.length == graph.length
+        complete_tours.push (n for n in tour) # clone
+        break if complete_tours.length == max_num_solutions
       # pessimistically call this a dead end
       dead_ends[current_square][next_square] = true
       current_square = next_square
@@ -42,7 +50,7 @@ graph_tour = (graph) ->
       doomed_square = tour.pop()
       dead_ends[doomed_square] = {}
       visited[doomed_square] = false
-  throw "tour is impossible"
+  complete_tours
   
 
 knight_graph = (board_width) ->
@@ -86,6 +94,7 @@ illustrate_knights_tour = (tour, board_width) ->
     return " " + n if n < 10
     "#{n}"
     
+  console.log "\n------"
   moves = {}
   for square, i in tour  
     moves[square] = i + 1
@@ -94,9 +103,12 @@ illustrate_knights_tour = (tour, board_width) ->
     for j in [0...board_width]
       s += "  " + pad moves[i*board_width + j]
     console.log s
-  
-  
+    
 BOARD_WIDTH = 8
+MAX_NUM_SOLUTIONS = 100000
+
 graph = knight_graph BOARD_WIDTH
-tour = graph_tour graph
-illustrate_knights_tour tour, BOARD_WIDTH
+tours = graph_tours graph, MAX_NUM_SOLUTIONS
+console.log "#{tours.length} tours found (showing first and last)"
+illustrate_knights_tour tours[0], BOARD_WIDTH
+illustrate_knights_tour tours.pop(), BOARD_WIDTH
