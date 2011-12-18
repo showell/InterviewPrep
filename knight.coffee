@@ -67,7 +67,23 @@ knight_graph = (board_width) ->
       graph[index(i, j)] = reachable_squares i, j
   graph
   
+illustrate_knights_tour = (tour, board_width) ->
+  pad = (n) ->
+    return " _" if !n?
+    return " " + n if n < 10
+    "#{n}"
+    
+  moves = {}
+  for square, i in tour  
+    moves[square] = i + 1
+  for i in [0...board_width]
+    s = ''
+    for j in [0...board_width]
+      s += "  " + pad moves[i*board_width + j]
+    console.log s
+  
+  
 BOARD_WIDTH = 8
 graph = knight_graph BOARD_WIDTH
 tour = graph_tour graph
-console.log tour
+illustrate_knights_tour tour, BOARD_WIDTH
