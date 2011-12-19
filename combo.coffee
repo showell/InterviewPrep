@@ -3,22 +3,22 @@ combinations = (n, p) ->
   i = 0
   combos = []
   combo = []
-  while true
-    if i >= n
+  while combo.length < p
+    if i < n
+      combo.push i
+      i += 1
+    else
       break if combo.length == 0
       i = combo.pop() + 1
-    else
-      combo.push i
-      if combo.length == p
-        combos.push clone combo
-        i = combo.pop() + 1
-      else
-        i += 1
+      
+    if combo.length == p
+      combos.push clone combo
+      i = combo.pop() + 1
   combos
-    
+
 clone = (arr) -> (n for n in arr)
 
-N = 3
+N = 5
 for i in [0..N]
   console.log "------ #{N} #{i}"
   for combo in combinations N, i
