@@ -1,6 +1,10 @@
 pad = (n) ->
-  new Array(1 + parseInt(n)).join ' '
-  
+  s = ''
+  while n > 0
+    s += ' '
+    n -= 1
+  s
+
 align = (input, alignment = 'center') ->
   tokenized_lines = (line.split '$' for line in input)
   col_widths = {}
