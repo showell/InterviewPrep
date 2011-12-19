@@ -1,5 +1,4 @@
 combinations = (n, p) ->
-  return [ [] ] if p == 0
   i = 0
   combos = []
   combo = []
