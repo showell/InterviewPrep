@@ -51,39 +51,37 @@ ChatServer::sendToEveryChatterExcept = (chatter, data) ->
     @chatters[nickname].send data  unless nickname is chatter.nickname
 
 
-Chatter = (socket, server) ->
-  EventEmitter.call this
-  @socket = socket
-  @server = server
-  @nickname = ""
-  @lineBuffer = new SocketLineBuffer(socket)
-  @lineBuffer.on "line", @handleNickname.bind(this)
-  @socket.on "close", @handleDisconnect.bind(this)
-  @send "Welcome! What is your nickname?"
-  null
+class Chatter extends EventEmitter
+  constructor: (socket, server) ->
+    EventEmitter.call this
+    @socket = socket
+    @server = server
+    @nickname = ""
+    @lineBuffer = new SocketLineBuffer(socket)
+    @lineBuffer.on "line", @handleNickname.bind(this)
+    @socket.on "close", @handleDisconnect.bind(this)
+    @send "Welcome! What is your nickname?"
 
-sys.inherits Chatter, EventEmitter
+  handleNickname: (nickname) ->
+    console.log nickname 
+    if server.isNicknameLegal(nickname)
+      @nickname = nickname
+      @lineBuffer.removeAllListeners "line"
+      @lineBuffer.on "line", @handleChat.bind(this)
+      @send "Welcome to the chat, " + nickname + "!"
+      @emit "join", this
+    else
+      @send "Sorry, but that nickname is not legal or is already in use!"
+      @send "What is your nickname?"
 
-Chatter::handleNickname = (nickname) ->
-  console.log nickname
-  if server.isNicknameLegal(nickname)
-    @nickname = nickname
-    @lineBuffer.removeAllListeners "line"
-    @lineBuffer.on "line", @handleChat.bind(this)
-    @send "Welcome to the chat, " + nickname + "!"
-    @emit "join", this
-  else
-    @send "Sorry, but that nickname is not legal or is already in use!"
-    @send "What is your nickname?"
+  handleChat: (line) ->
+    @emit "chat", this, line
 
-Chatter::handleChat = (line) ->
-  @emit "chat", this, line
+  handleDisconnect: ->
+    @emit "leave", this
 
-Chatter::handleDisconnect = ->
-  @emit "leave", this
-
-Chatter::send = (data) ->
-  @socket.write data + "\r\n"
+  send: (data) ->
+    @socket.write data + "\r\n"
 
 
 class SocketLineBuffer extends EventEmitter
