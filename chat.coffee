@@ -1,54 +1,53 @@
 net = require("net")
 sys = require("sys")
-
 EventEmitter = require("events").EventEmitter
 
-ChatServer = ->
-  @chatters = {}
-  @server = net.createServer(@handleConnection.bind(this))
-  @server.listen 1212, "localhost"
-  null
-
-ChatServer::isNicknameLegal = (nickname) ->
-  return false  unless nickname.replace(/[A-Za-z0-9]*/, "") is ""
+isNicknameLegal = (nickname) ->
+  return false unless nickname.replace(/[A-Za-z0-9]*/, "") is ""
   for used_nick of @chatters
-    return false  if used_nick is nickname
+    return false if used_nick is nickname
   true
 
-ChatServer::handleConnection = (connection) ->
-  console.log "Incoming connection from " + connection.remoteAddress
-  connection.setEncoding "utf8"
-  chatter = new Chatter(connection, this)
-  chatter.on "chat", @handleChat.bind(this)
-  chatter.on "join", @handleJoin.bind(this)
-  chatter.on "leave", @handleLeave.bind(this)
+class ChatServer
+  constructor: ->
+    @chatters = {}
+    @server = net.createServer(@handleConnection.bind(this))
+    @server.listen 1212, "localhost"
 
-ChatServer::handleChat = (chatter, message) ->
-  @sendToEveryChatterExcept chatter, chatter.nickname + ": " + message
+  handleConnection: (connection) ->
+    console.log "Incoming connection from " + connection.remoteAddress
+    connection.setEncoding "utf8"
+    chatter = new Chatter(connection, this)
+    chatter.on "chat", @handleChat.bind(this)
+    chatter.on "join", @handleJoin.bind(this)
+    chatter.on "leave", @handleLeave.bind(this)
 
-ChatServer::handleJoin = (chatter) ->
-  console.log chatter.nickname + " has joined the chat."
-  @sendToEveryChatter chatter.nickname + " has joined the chat."
-  @addChatter chatter
+  handleChat: (chatter, message) ->
+    @sendToEveryChatterExcept chatter, chatter.nickname + ": " + message
 
-ChatServer::handleLeave = (chatter) ->
-  console.log chatter.nickname + " has left the chat."
-  @removeChatter chatter
-  @sendToEveryChatter chatter.nickname + " has left the chat."
+  handleJoin: (chatter) ->
+    console.log chatter.nickname + " has joined the chat."
+    @sendToEveryChatter chatter.nickname + " has joined the chat."
+    @addChatter chatter
 
-ChatServer::addChatter = (chatter) ->
-  @chatters[chatter.nickname] = chatter
+  handleLeave: (chatter) ->
+    console.log chatter.nickname + " has left the chat."
+    @removeChatter chatter
+    @sendToEveryChatter chatter.nickname + " has left the chat."
 
-ChatServer::removeChatter = (chatter) ->
-  delete @chatters[chatter.nickname]
+  addChatter: (chatter) ->
+    @chatters[chatter.nickname] = chatter
 
-ChatServer::sendToEveryChatter = (data) ->
-  for nickname of @chatters
-    @chatters[nickname].send data
+  removeChatter: (chatter) ->
+    delete @chatters[chatter.nickname]
 
-ChatServer::sendToEveryChatterExcept = (chatter, data) ->
-  for nickname of @chatters
-    @chatters[nickname].send data  unless nickname is chatter.nickname
+  sendToEveryChatter: (data) ->
+    for nickname of @chatters
+      @chatters[nickname].send data
+
+  sendToEveryChatterExcept: (chatter, data) ->
+    for nickname of @chatters
+      @chatters[nickname].send data  unless nickname is chatter.nickname
 
 
 class Chatter extends EventEmitter
@@ -63,8 +62,7 @@ class Chatter extends EventEmitter
     @send "Welcome! What is your nickname?"
 
   handleNickname: (nickname) ->
-    console.log nickname 
-    if server.isNicknameLegal(nickname)
+    if isNicknameLegal(nickname)
       @nickname = nickname
       @lineBuffer.removeAllListeners "line"
       @lineBuffer.on "line", @handleChat.bind(this)
