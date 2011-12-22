@@ -86,27 +86,26 @@ Chatter::send = (data) ->
   @socket.write data + "\r\n"
 
 
-SocketLineBuffer = (socket) ->
-  EventEmitter.call this
-  @socket = socket
-  @buffer = ""
-  @socket.on "data", @handleData.bind(this)
-  null
+class SocketLineBuffer extends EventEmitter
+  constructor: (socket) ->
+    EventEmitter.call this
+    @socket = socket
+    @buffer = ""
+    @socket.on "data", @handleData.bind(this)
 
-sys.inherits SocketLineBuffer, EventEmitter
+  handleData: (data) ->
+    console.log "Handling data", data
+    i = 0
 
-SocketLineBuffer::handleData = (data) ->
-  console.log "Handling data", data
-  i = 0
-
-  while i < data.length
-    char = data.charAt(i)
-    @buffer += char
-    if char is "\n"
-      @buffer = @buffer.replace("\r\n", "")
-      @buffer = @buffer.replace("\n", "")
-      @emit "line", @buffer
-      @buffer = ""
-    i++
+    while i < data.length
+      char = data.charAt(i)
+      @buffer += char
+      if char is "\n"
+        @buffer = @buffer.replace("\r\n", "")
+        @buffer = @buffer.replace("\n", "")
+        @emit "line", @buffer
+        console.log "incoming line: #{@buffer}"
+        @buffer = ""
+      i++
 
 server = new ChatServer()
