@@ -11,41 +11,41 @@ isNicknameLegal = (nickname) ->
 class ChatServer
   constructor: ->
     @chatters = {}
-    @server = net.createServer(@handleConnection.bind(this))
+    @server = net.createServer @handleConnection
     @server.listen 1212, "localhost"
 
-  handleConnection: (connection) ->
+  handleConnection: (connection) =>
     console.log "Incoming connection from " + connection.remoteAddress
     connection.setEncoding "utf8"
     chatter = new Chatter(connection, this)
-    chatter.on "chat", @handleChat.bind(this)
-    chatter.on "join", @handleJoin.bind(this)
-    chatter.on "leave", @handleLeave.bind(this)
+    chatter.on "chat", @handleChat
+    chatter.on "join", @handleJoin
+    chatter.on "leave", @handleLeave
 
-  handleChat: (chatter, message) ->
+  handleChat: (chatter, message) =>
     @sendToEveryChatterExcept chatter, chatter.nickname + ": " + message
 
-  handleJoin: (chatter) ->
+  handleJoin: (chatter) =>
     console.log chatter.nickname + " has joined the chat."
     @sendToEveryChatter chatter.nickname + " has joined the chat."
     @addChatter chatter
 
-  handleLeave: (chatter) ->
+  handleLeave: (chatter) =>
     console.log chatter.nickname + " has left the chat."
     @removeChatter chatter
     @sendToEveryChatter chatter.nickname + " has left the chat."
 
-  addChatter: (chatter) ->
+  addChatter: (chatter) =>
     @chatters[chatter.nickname] = chatter
 
-  removeChatter: (chatter) ->
+  removeChatter: (chatter) =>
     delete @chatters[chatter.nickname]
 
-  sendToEveryChatter: (data) ->
+  sendToEveryChatter: (data) =>
     for nickname of @chatters
       @chatters[nickname].send data
 
-  sendToEveryChatterExcept: (chatter, data) ->
+  sendToEveryChatterExcept: (chatter, data) =>
     for nickname of @chatters
       @chatters[nickname].send data  unless nickname is chatter.nickname
 
@@ -57,28 +57,28 @@ class Chatter extends EventEmitter
     @server = server
     @nickname = ""
     @lineBuffer = new SocketLineBuffer(socket)
-    @lineBuffer.on "line", @handleNickname.bind(this)
-    @socket.on "close", @handleDisconnect.bind(this)
+    @lineBuffer.on "line", @handleNickname
+    @socket.on "close", @handleDisconnect
     @send "Welcome! What is your nickname?"
 
-  handleNickname: (nickname) ->
+  handleNickname: (nickname) =>
     if isNicknameLegal(nickname)
       @nickname = nickname
       @lineBuffer.removeAllListeners "line"
-      @lineBuffer.on "line", @handleChat.bind(this)
+      @lineBuffer.on "line", @handleChat
       @send "Welcome to the chat, " + nickname + "!"
       @emit "join", this
     else
       @send "Sorry, but that nickname is not legal or is already in use!"
       @send "What is your nickname?"
 
-  handleChat: (line) ->
+  handleChat: (line) =>
     @emit "chat", this, line
 
-  handleDisconnect: ->
+  handleDisconnect: =>
     @emit "leave", this
 
-  send: (data) ->
+  send: (data) =>
     @socket.write data + "\r\n"
 
 
@@ -87,9 +87,9 @@ class SocketLineBuffer extends EventEmitter
     EventEmitter.call this
     @socket = socket
     @buffer = ""
-    @socket.on "data", @handleData.bind(this)
+    @socket.on "data", @handleData
 
-  handleData: (data) ->
+  handleData: (data) =>
     console.log "Handling data", data
     i = 0
 
