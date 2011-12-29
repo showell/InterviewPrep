@@ -13,23 +13,42 @@ HOST = 'rosettacode.org'
 http = require 'http'
 
 
-process_task_page = (link_info, cb) ->
+process_task_page = (link_info, done) ->
   path = link_info.href
   process_page path, (err, dom) ->
     snippets = soupselect.select dom, LANG_SELECTOR
-    for snippet in snippets
-      console.log '----------'
-      console.log dom_to_text snippet
-    cb()
+    html = """
+      <hr>
+      <h2>#{link_info.title}</h2>
+      """
+    for snippet, i in snippets
+      code = fix_tabs dom_to_text snippet
+      html += """
+        <h5>Example #{i}</h5>
+        <pre class="code">
+        #{code}
+        </pre>
+        """
+    done(html)
 
-process_language_page = (cb) -> 
+process_language_page = (done) -> 
+  html = """
+    <h1>CoffeeScript Examples From Rosetta Code</h1>
+    """
+
   handler = (err, dom) ->
     links = soupselect.select dom, CATEGORY_PAGES_SELECTOR
     link_info = (link) ->
       href: link.attribs.href
       title: link.attribs.title
     links = (link_info(link) for link in links)
-    process_list links, process_task_page, cb
+    task_page_handler = (link_info, done) ->
+      process_task_page link_info, (new_html) ->
+        html += new_html
+        done()
+    process_list links, task_page_handler, ->
+      console.log html
+      done()
 
   process_page "/wiki/Category:#{CATEGORY}", handler
 
@@ -76,16 +95,18 @@ dom_to_text = (dom) ->
     for child in dom.children
       s += dom_to_text child
   html_decode(s)
+
+fix_tabs = (s) ->
+  s.replace "\t", "  "
   
 html_decode = (s) ->
   s = s.replace /&#(\d+);/g, (a, b) ->
+    return ' ' if b == '160' # npbsp
     String.fromCharCode(b)
-  s = s.replace /&(.*?);/gx, (a, b) ->
+  s = s.replace /&(.*?);/g, (a, b) ->
     map =
       gt: '>'
       quot: '"'
     map[b] || "UNKNOWN CHAR"
-    
-    
     
 process_language_page -> console.log "DONE!"
