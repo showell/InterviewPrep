@@ -1,12 +1,17 @@
+# use npm install for below modules:
+soupselect = require 'soupselect'
+htmlparser = require 'htmlparser'
+
+# configure these for your language
 CATEGORY = 'CoffeeScript'
 LANG_SELECTOR = 'pre.coffeescript.highlighted_source'
+
+####
 CATEGORY_PAGES_SELECTOR = "#mw-pages li a"
 HOST = 'rosettacode.org'
 
 http = require 'http'
-# use npm install for below modules:
-soupselect = require 'soupselect'
-htmlparser = require 'htmlparser'
+
 
 process_task_page = (link_info, cb) ->
   path = link_info.href
@@ -42,7 +47,7 @@ process_list = (list, f, done_cb) ->
     if i < list.length
       f list[i], ->
         i += 1
-        return done_cb()
+        return done_cb() if i == 3
         _process()
     else
       done_cb()
@@ -75,7 +80,7 @@ dom_to_text = (dom) ->
 html_decode = (s) ->
   s = s.replace /&#(\d+);/g, (a, b) ->
     String.fromCharCode(b)
-  s = s.replace /&(.*?);/, (a, b) ->
+  s = s.replace /&(.*?);/gx, (a, b) ->
     map =
       gt: '>'
       quot: '"'
