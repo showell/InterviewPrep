@@ -11,18 +11,20 @@ process_task_page = (link_info, cb) ->
   console.log link_info
   cb()
 
-process_language_page = -> 
-  wget "/wiki/Category:#{CATEGORY}", (body) ->
-    f = (err, dom) ->
-      links = soupselect.select dom, CATEGORY_PAGES_SELECTOR
-      link_info = (link) ->
-        href: link.attribs.href
-        title: link.attribs.title
-      links = (link_info(link) for link in links)
-      process_list links, process_task_page, ->
-        console.log "DONE!"
+process_language_page = (cb) -> 
+  handler = (err, dom) ->
+    links = soupselect.select dom, CATEGORY_PAGES_SELECTOR
+    link_info = (link) ->
+      href: link.attribs.href
+      title: link.attribs.title
+    links = (link_info(link) for link in links)
+    process_list links, process_task_page, cb
 
-    handler = new htmlparser.DefaultHandler(f)
+  process_page "/wiki/Category:#{CATEGORY}", handler
+
+process_page = (path, cb) -> 
+  wget path, (body) ->
+    handler = new htmlparser.DefaultHandler(cb)
     parser = new htmlparser.Parser(handler)
     parser.parseComplete body
 
@@ -52,4 +54,4 @@ wget = (path, cb) ->
       cb s
   req.end()
 
-process_language_page()
+process_language_page -> console.log "DONE!"
