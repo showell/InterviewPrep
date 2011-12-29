@@ -66,7 +66,7 @@ process_list = (list, f, done_cb) ->
     if i < list.length
       f list[i], ->
         i += 1
-        return done_cb() if i == 3
+        # return done_cb() if i == 3
         _process()
     else
       done_cb()
@@ -97,7 +97,7 @@ dom_to_text = (dom) ->
   html_decode(s)
 
 fix_tabs = (s) ->
-  s.replace "\t", "  "
+  s.replace "\t", "TABS, REALLY?"
   
 html_decode = (s) ->
   s = s.replace /&#(\d+);/g, (a, b) ->
@@ -105,8 +105,10 @@ html_decode = (s) ->
     String.fromCharCode(b)
   s = s.replace /&(.*?);/g, (a, b) ->
     map =
+      amp: '&'
       gt: '>'
+      lt: '<'
       quot: '"'
-    map[b] || "UNKNOWN CHAR"
+    map[b] || "UNKNOWN CHAR #{b}"
     
 process_language_page -> console.log "DONE!"
