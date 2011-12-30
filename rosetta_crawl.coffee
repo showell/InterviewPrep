@@ -31,7 +31,6 @@ HOST = 'rosettacode.org'
 
 http = require 'http'
 
-
 process_task_page = (link_info, done) ->
   path = link_info.href
   page_link = "http://#{HOST}#{link_info.href}"
@@ -45,18 +44,24 @@ process_task_page = (link_info, done) ->
   process_page path, (err, dom) ->
     snippets = soupselect.select dom, LANG_SELECTOR
 
-    for snippet, i in snippets
-      code = fix_tabs dom_to_text snippet
-      if snippets.length > 1
+    i = 0
+    process_snippet = (snippet, done) ->
+      source = fix_tabs dom_to_text snippet
+      color_syntax source, (code) ->
+        if snippets.length > 1
+          i += 1
+          html += """
+            <h5>Example #{i}</h5>
+            """
         html += """
-          <h5>Example #{i}</h5>
+          <pre class="code">
+          #{code}
+          </pre>
           """
-      html += """
-        <pre class="code">
-        #{code}
-        </pre>
-        """
-    done("<div class='task'>#{html}</div>")
+        done()
+
+    process_list snippets, process_snippet, ->
+      done("<div class='task'>#{html}</div>")
 
 process_language_page = (done) -> 
   html = """
@@ -122,6 +127,19 @@ wget = (path, cb) ->
     res.on 'end', ->
       cb s
   req.end()
+
+color_syntax = (source, callback) ->
+  {spawn} = require 'child_process'
+  pygments = spawn 'pygmentize', ['-l', LANGUAGE.toLowerCase(), '-f', 'html', '-O', 'encoding=utf-8']
+  output   = ''
+  pygments.stderr.addListener 'data',  (error)  ->
+    console.error error if error
+  pygments.stdout.addListener 'data', (result) ->
+    output += result if result
+  pygments.addListener 'exit', ->
+    callback(output)
+  pygments.stdin.write(source)
+  pygments.stdin.end()
 
 dom_to_text = (dom) ->
   if dom.name == 'br'
