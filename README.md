@@ -2,7 +2,7 @@ This project started out with a bunch of miscellaneous small programs that I wro
 to prepare for technical job interviews.
 
 After a little while, I started contributing many of the examples to <a href="http://rosettacode.org">Rosetta Code</a>,
-particularly the <a href="http://coffeescript.org">CoffeScript</a> examples.
+particularly the <a href="http://coffeescript.org">CoffeeScript</a> examples.
 
 Most of these programs are toys, but one program is practical in nature: rosetta_crawl.coffee was used
 by me to create this site: <a href="http://shpaml.webfactional.com/misc/RosettaCoffee/code.htm">CoffeeScript Examples from
