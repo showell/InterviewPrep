@@ -3,11 +3,30 @@ soupselect = require 'soupselect'
 htmlparser = require 'htmlparser'
 
 # configure these for your language
-CATEGORY = 'CoffeeScript'
+LANGUAGE = 'CoffeeScript'
 LANG_SELECTOR = 'pre.coffeescript.highlighted_source'
+BLACKLIST = (title) ->
+  # These are programs that just don't add a lot of value out of context,
+  # or that have distracting style issues.
+  return true if title in [
+    '100 doors'
+    'A+B'
+    'Comments'
+    'CSV to HTML translation'
+    'Empty program'
+    'First-class functions' # for now
+    'Flatten a list' # for now
+    'Hailstone sequence' # for now, strange whitespace
+    'Infinity'
+    'Quine'
+  ]
+  return true if title.match /Hello world/
+  return true if title.match /Loops\//
+  return true if title.match /Vigen.* cipher/ # unicode
+  false
 
 ####
-CATEGORY_PAGES_SELECTOR = "#mw-pages li a"
+LANGUAGE_PAGES_SELECTOR = "#mw-pages li a"
 HOST = 'rosettacode.org'
 
 http = require 'http'
@@ -15,33 +34,52 @@ http = require 'http'
 
 process_task_page = (link_info, done) ->
   path = link_info.href
+  page_link = "http://#{HOST}#{link_info.href}"
+  lang_link = "#{page_link}##{LANGUAGE}"
+  html = """
+    <hr>
+    <h2><a href=#{page_link}>#{link_info.title}</a></h2>
+    <a href=#{lang_link}>CoffeeScript section on Rosetta Stone</a>
+    """
+
   process_page path, (err, dom) ->
     snippets = soupselect.select dom, LANG_SELECTOR
-    html = """
-      <hr>
-      <h2>#{link_info.title}</h2>
-      """
+
     for snippet, i in snippets
       code = fix_tabs dom_to_text snippet
+      if snippets.length > 1
+        html += """
+          <h5>Example #{i}</h5>
+          """
       html += """
-        <h5>Example #{i}</h5>
         <pre class="code">
         #{code}
         </pre>
         """
-    done(html)
+    done("<div class='task'>#{html}</div>")
 
 process_language_page = (done) -> 
   html = """
+    <head>
+    <style>
+      pre.code {
+        margin-left: 30px;
+      }
+      .task {
+        margin-left: 50px;
+      }
+    </style>
+    </head>
     <h1>CoffeeScript Examples From Rosetta Code</h1>
     """
 
   handler = (err, dom) ->
-    links = soupselect.select dom, CATEGORY_PAGES_SELECTOR
+    links = soupselect.select dom, LANGUAGE_PAGES_SELECTOR
     link_info = (link) ->
       href: link.attribs.href
       title: link.attribs.title
     links = (link_info(link) for link in links)
+    links = (link for link in links when !BLACKLIST link.title)
     task_page_handler = (link_info, done) ->
       process_task_page link_info, (new_html) ->
         html += new_html
@@ -50,7 +88,7 @@ process_language_page = (done) ->
       console.log html
       done()
 
-  process_page "/wiki/Category:#{CATEGORY}", handler
+  process_page "/wiki/Category:#{LANGUAGE}", handler
 
 process_page = (path, cb) -> 
   wget path, (body) ->
@@ -111,4 +149,4 @@ html_decode = (s) ->
       quot: '"'
     map[b] || "UNKNOWN CHAR #{b}"
     
-process_language_page -> console.log "DONE!"
+process_language_page -> # do nothing
