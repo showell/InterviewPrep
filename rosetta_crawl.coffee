@@ -39,7 +39,7 @@ ROSETTA_INTRO = """
   <p>
   In particular, we focus on the <a href="#{LANGUAGE_WEBSITE}">#{LANGUAGE}</a> programming language.  
   Most of the content here was originally posted on Rosetta Code, and this content remains licensed under the 
-  <a href="http://www.gnu.org/licenses/fdl-1.2.html">GNU Free Documentation Licence</a>.
+  <a href="http://www.gnu.org/licenses/fdl-1.2.html">GNU Free Documentation Licence version 1.2</a>.
   </p>
   
   <p>
