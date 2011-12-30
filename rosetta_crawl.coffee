@@ -24,6 +24,23 @@ BLACKLIST = (title) ->
   return true if title.match /Loops\//
   return true if title.match /Vigen.* cipher/ # unicode
   false
+  
+PAGE_INTRO = """
+  <head>
+  <link rel="stylesheet" media="all" href="docco.css" />
+  <style>
+    pre.code {
+      margin-left: 30px;
+    }
+    .task {
+      margin-left: 50px;
+    }
+  </style>
+  </head>
+  <h1>CoffeeScript Examples From Rosetta Code</h1>
+  """
+
+
 
 ####
 LANGUAGE_PAGES_SELECTOR = "#mw-pages li a"
@@ -64,20 +81,7 @@ process_task_page = (link_info, done) ->
       done("<div class='task'>#{html}</div>")
 
 process_language_page = (done) -> 
-  html = """
-    <head>
-    <style>
-      pre.code {
-        margin-left: 30px;
-      }
-      .task {
-        margin-left: 50px;
-      }
-    </style>
-    </head>
-    <h1>CoffeeScript Examples From Rosetta Code</h1>
-    """
-
+  html = PAGE_INTRO
   handler = (err, dom) ->
     links = soupselect.select dom, LANGUAGE_PAGES_SELECTOR
     link_info = (link) ->
