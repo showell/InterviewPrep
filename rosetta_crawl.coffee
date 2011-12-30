@@ -9,15 +9,19 @@ BLACKLIST = (title) ->
   # These are programs that just don't add a lot of value out of context,
   # or that have distracting style issues.
   return true if title in [
+    '24 game' # whitespace
     '100 doors'
     'A+B'
     'Comments'
     'CSV to HTML translation'
     'Empty program'
+    'Find the missing permutation' # tabs, non-optimal implementation
     'First-class functions' # for now
     'Flatten a list' # for now
     'Hailstone sequence' # for now, strange whitespace
     'Infinity'
+    'Palindrome detection' # whitespace
+    'Permutations' # whitespace
     'Quine'
   ]
   return true if title.match /Hello world/
