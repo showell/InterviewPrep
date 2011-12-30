@@ -4,6 +4,7 @@ htmlparser = require 'htmlparser'
 
 # configure these for your language
 LANGUAGE = 'CoffeeScript'
+LANGUAGE_WEBSITE = "http://coffeescript.org"
 LANG_SELECTOR = 'pre.coffeescript.highlighted_source'
 BLACKLIST = (title) ->
   # These are programs that just don't add a lot of value out of context,
@@ -29,24 +30,43 @@ BLACKLIST = (title) ->
   return true if title.match /Vigen.* cipher/ # unicode
   false
   
+ROSETTA_INTRO = """
+  <p>
+  This site aggregates some content from <a href="http://rosettacode.org">Rosetta Code</a>, which is a website
+  that presents solutions to programming tasks in many different languages.
+  </p>
+  
+  <p>
+  In particular, we focus on the <a href="#{LANGUAGE_WEBSITE}">#{LANGUAGE}</a> programming language.  
+  Most of the content here was originally posted on Rosetta Code, and this content remains licensed under the 
+  <a href="http://www.gnu.org/licenses/fdl-1.2.html">GNU Free Documentation Licence</a>.
+  </p>
+  
+  <p>
+  You can see the code used for crawling Rosetta by
+  following <a href="https://github.com/showell/InterviewPrep/blob/master/rosetta_crawl.coffee">this link</a>.
+  </p>
+"""
+
+
+####
 PAGE_INTRO = """
   <head>
   <link rel="stylesheet" media="all" href="docco.css" />
   <style>
+    body {
+      margin-left: 50px;
+    }
+    p {
+      width: 500px;
+    }
     pre.code {
       margin-left: 30px;
     }
-    .task {
-      margin-left: 50px;
-    }
   </style>
   </head>
-  <h1>CoffeeScript Examples From Rosetta Code</h1>
+  #{ROSETTA_INTRO}
   """
-
-
-
-####
 LANGUAGE_PAGES_SELECTOR = "#mw-pages li a"
 HOST = 'rosettacode.org'
 
