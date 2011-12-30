@@ -46,6 +46,11 @@ ROSETTA_INTRO = """
   You can see the code used for crawling Rosetta by
   following <a href="https://github.com/showell/InterviewPrep/blob/master/rosetta_crawl.coffee">this link</a>.
   </p>
+  
+  <p>
+  Be a contributor!  You can enhance the Rosetta Code site by <a href="http://rosettacode.org/wiki/Reports:Tasks_not_implemented_in_#{LANGUAGE}">
+  implementing new tasks for #{LANGUAGE}</a>.
+  </p>
 """
 
 
@@ -79,7 +84,7 @@ process_task_page = (link_info, done) ->
   html = """
     <hr>
     <h2><a href=#{page_link}>#{link_info.title}</a></h2>
-    <a href=#{lang_link}>CoffeeScript section on Rosetta Stone</a>
+    <a href=#{lang_link}>#{LANGUAGE} section on Rosetta Stone</a>
     """
 
   process_page path, (err, dom) ->
