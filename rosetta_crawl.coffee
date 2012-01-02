@@ -17,8 +17,6 @@ BLACKLIST = (title) ->
     'CSV to HTML translation'
     'Empty program'
     'First-class functions' # for now
-    'Flatten a list' # for now
-    'Hailstone sequence' # for now, strange whitespace
     'Infinity'
     'Permutations' # whitespace
     'Quine'
