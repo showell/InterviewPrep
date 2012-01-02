@@ -20,7 +20,6 @@ BLACKLIST = (title) ->
     'Flatten a list' # for now
     'Hailstone sequence' # for now, strange whitespace
     'Infinity'
-    'Palindrome detection' # whitespace
     'Permutations' # whitespace
     'Quine'
   ]
