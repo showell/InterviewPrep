@@ -16,7 +16,6 @@ BLACKLIST = (title) ->
     'Comments'
     'CSV to HTML translation'
     'Empty program'
-    'Find the missing permutation' # tabs, non-optimal implementation
     'First-class functions' # for now
     'Flatten a list' # for now
     'Hailstone sequence' # for now, strange whitespace
@@ -84,7 +83,7 @@ process_task_page = (link_info, done) ->
   html = """
     <hr>
     <h2><a href=#{page_link}>#{link_info.title}</a></h2>
-    <a href=#{lang_link}>#{LANGUAGE} section on Rosetta Stone</a>
+    <a href=#{lang_link}>#{LANGUAGE} section on Rosetta Code</a>
     """
 
   process_page path, (err, dom) ->
