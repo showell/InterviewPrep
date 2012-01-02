@@ -148,6 +148,8 @@ wget = (path, cb) ->
   options =
     host: HOST
     path: path
+    headers:
+      "Cache-Control": "max-age=0"
   
   req = http.request options, (res) ->
     s = ''
