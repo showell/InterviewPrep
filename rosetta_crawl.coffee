@@ -53,6 +53,7 @@ ROSETTA_INTRO = """
 ####
 PAGE_INTRO = """
   <head>
+  <title>#{LANGUAGE} Examples from Rosetta Code</title>
   <link rel="stylesheet" media="all" href="docco.css" />
   <style>
     body {
