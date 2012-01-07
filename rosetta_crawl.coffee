@@ -80,8 +80,11 @@ process_task_page = (link_info, done) ->
   lang_link = "#{page_link}##{LANGUAGE}"
   html = """
     <hr>
+    <a name="#{link_info.title}" />
     <h2><a href=#{page_link}>#{link_info.title}</a></h2>
     <a href=#{lang_link}>#{LANGUAGE} section on Rosetta Code</a>
+    <br>
+    <a href="##{link_info.title}">(local link)</a><br />
     """
 
   process_page path, (err, dom) ->
