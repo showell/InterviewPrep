@@ -1,3 +1,49 @@
+# We lex tokens then do recursive descent on the tokens
+# to build our data structures.
+parse = (sexp) ->
+  tokens = lex sexp
+  i = 0
+
+  _parse_list = ->
+    i += 1
+    arr = []
+    while i < tokens.length and tokens[i].type != ')'
+      arr.push _parse()
+    if i < tokens.length
+      i += 1
+    else
+     throw Error "missing end paren"
+    arr
+    
+  _guess_type = (word) ->
+    # This is crude
+    if word.match /^\d+\.\d+$/
+      parseFloat(word)
+    else if word.match /^\d+/
+      parseInt(word)
+    else
+      word    
+
+  _parse_word = ->
+    token = tokens[i]
+    i += 1
+    if token.type == 'string'
+      token.word
+    else
+      _guess_type token.word
+      
+  _parse = ->
+    return undefined unless i < tokens.length
+    token = tokens[i]
+    if token.type == '('
+      _parse_list()
+    else
+      _parse_word()
+
+  exp = _parse()
+  throw Error "premature termination" if i < tokens.length
+  exp
+    
 lex = (sexp) ->
   is_whitespace = (c) -> c in [' ', '\t', '\n']
   i = 0
@@ -8,24 +54,26 @@ lex = (sexp) ->
     f(sexp[i])
   
   eat_char = (c) ->
-    tokens.push c
+    tokens.push
+      type: c
     i += 1
 
   eat_whitespace = ->
     i += 1
     while test is_whitespace
       i += 1
-    tokens.push ' '
 
   eat_word = ->
     token = c
     i += 1
     word_char = (c) ->
-      c != '(' and !is_whitespace c
+      c != ')' and !is_whitespace c
     while test word_char
       token += sexp[i]
       i += 1
-    tokens.push token
+    tokens.push
+      type: "word"
+      word: token
   
   eat_quoted_word = ->
     start = i
@@ -38,7 +86,9 @@ lex = (sexp) ->
       token += sexp[i]
       i += 1
     if test ((c) -> c == '"')
-      tokens.push token
+      tokens.push
+        type: "string"
+        word: token
       i += 1
     else
       throw Error("end quote missing #{sexp.substring(start, i)}")
@@ -55,9 +105,11 @@ lex = (sexp) ->
       eat_word()
   tokens
 
-
-test = """
-  ((data "quoted data with escaped \\"" 123 4.5)
-   (data (!@# (4.5) "(more" "data)")))
-"""
-console.log lex(test)
+do ->
+  input = """
+    ((data "quoted data with escaped \\"" 123 4.5 "14")
+     (data (!@# (4.5) "(more" "data)")))
+  """
+  console.log "input:\n#{input}\n"
+  output = JSON.stringify parse(input), null, '  '
+  console.log "output:\n#{output}"
