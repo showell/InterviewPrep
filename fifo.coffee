@@ -1,35 +1,32 @@
 # Implement a fifo as an array of arrays, to
-# greatly amortize dequeues, at some expense of
-# memory overhead and insertion time.
+# greatly amortize dequeue costs, at some expense of
+# memory overhead and insertion time.  The speedup
+# depends on the underlying JS implementation, but
+# it's significant on node.js.
 Fifo = ->
-  max_chunk = 4000
-  arr = []
+  max_chunk = 512
+  arr = [] # array of arrays
   count = 0
-  curr = -1
-  head = 0
 
   self =
     enqueue: (elem) ->
-      if count == 0 or arr[curr].length >= max_chunk
+      if count == 0 or arr[arr.length-1].length >= max_chunk
         arr.push []
-        curr += 1
       count += 1
-      arr[curr].push elem
+      arr[arr.length-1].push elem
     dequeue: (elem) ->
       throw Error("queue is empty") if count == 0
-      val = arr[0][head]
-      head += 1
+      val = arr[0].shift()
       count -= 1
-      if head >= arr[0].length
+      if arr[0].length == 0
         arr.shift()
-        head = 0
       val
     is_empty: (elem) ->
       count == 0
 
 # test
 do ->
-  max = 1000*1000
+  max = 5000000
   q = Fifo()
   for i in [1..max]
     q.enqueue
