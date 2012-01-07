@@ -1,7 +1,20 @@
+# This code works with Lisp-like s-expressions.
+#
 # We lex tokens then do recursive descent on the tokens
 # to build our data structures.
-parse = (sexp) ->
-  tokens = lex sexp
+
+sexp = (data) ->
+  # Convert a JS data structure to a string s-expression.  A sexier version
+  # would remove quotes around strings that don't need them.
+  s = ''
+  if Array.isArray data
+    children = (sexp elem for elem in data).join ' '
+    '(' + children + ')'
+  else
+    return JSON.stringify data
+
+parse_sexp = (sexp) ->
+  tokens = lex_sexp sexp
   i = 0
 
   _parse_list = ->
@@ -16,7 +29,7 @@ parse = (sexp) ->
     arr
     
   _guess_type = (word) ->
-    # This is crude
+    # This is crude, doesn't handle all forms of floats.
     if word.match /^\d+\.\d+$/
       parseFloat(word)
     else if word.match /^\d+/
@@ -44,7 +57,7 @@ parse = (sexp) ->
   throw Error "premature termination" if i < tokens.length
   exp
     
-lex = (sexp) ->
+lex_sexp = (sexp) ->
   is_whitespace = (c) -> c in [' ', '\t', '\n']
   i = 0
   tokens = []
@@ -111,5 +124,7 @@ do ->
      (data (!@# (4.5) "(more" "data)")))
   """
   console.log "input:\n#{input}\n"
-  output = JSON.stringify parse(input), null, '  '
-  console.log "output:\n#{output}"
+  output = parse_sexp(input)
+  pp = (data) -> JSON.stringify data, null, '  '
+  console.log "output:\n#{pp output}\n"
+  console.log "round trip:\n#{sexp output}\n"
