@@ -17,9 +17,10 @@ binary_tree =
     binary_tree.inorder right, visit
 
   postorder: (tree, visit) ->
+    return unless tree?
     [node, left, right] = tree
-    binary_tree.inorder left, visit
-    binary_tree.inorder right, visit
+    binary_tree.postorder left, visit
+    binary_tree.postorder right, visit
     visit node
     
   levelorder: (tree, visit) ->
