@@ -24,6 +24,7 @@ max_right_truncatable_number = (n, f) ->
         right -= 1
       left -= 1
       right = 9
+  throw Error "none found"
       
 max_left_truncatable_number = (max, f) ->
   # This is a pretty straightforward countdown.  The first
