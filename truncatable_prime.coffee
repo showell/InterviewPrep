@@ -4,7 +4,10 @@
 
 max_right_truncatable_number = (n, f) ->
   # This algorithm only evaluates 37 numbers for primeness to
-  # get the max right truncatable prime < 1000000.
+  # get the max right truncatable prime < 1000000.  Its
+  # optimization is that it prunes candidates for
+  # the first n-1 digits before having to iterate through
+  # the 10 possibilities for the last digit.
   if n < 10
     max_digit n, f
   else
@@ -19,9 +22,28 @@ max_right_truncatable_number = (n, f) ->
       left -= 1
       right = 9
       
-# max_left_truncatable_number = (n, f) ->
-#   
-   
+max_left_truncatable_number = (max, f) ->
+  # This is a pretty straightforward countdown.  The first
+  # optimization here would probably be to cache results of 
+  # calling f on small numbers.
+  is_left_truncatable = (n) ->
+    candidate = 0
+    power_of_ten = 1
+    while n > 0
+      r = n  % 10
+      return false if r == 0
+      n = Math.floor n / 10
+      candidate = r * power_of_ten + candidate
+      power_of_ten *= 10
+      return false unless f(candidate)
+    true
+  do ->
+    n = max
+    while n > 0
+      return n if is_left_truncatable n, f
+      n -= 1
+    throw Error "none found"
+
 max_digit = (n, f) ->
   # return max digit <= n where fn(fn) is true
   candidate = n 
@@ -37,4 +59,5 @@ is_prime = (n) ->
     return true if d * d >= n
 
     
-console.log max_right_truncatable_number 999999, is_prime
+console.log "right", max_right_truncatable_number(999999, is_prime)
+console.log "left", max_left_truncatable_number(999999, is_prime)
