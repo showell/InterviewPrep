@@ -15,15 +15,14 @@ max_right_truncatable_number = (n, f) ->
       candidate -= 1
   else
     left = Math.floor n / 10
-    right = n % 10
     while left > 0
       left = max_right_truncatable_number left, f
+      right = 9
       while right > 0
         candidate = left * 10 + right
-        return candidate if f(candidate)
+        return candidate if candidate <= n and f(candidate)
         right -= 1
       left -= 1
-      right = 9
   throw Error "none found"
       
 max_left_truncatable_number = (max, f) ->
