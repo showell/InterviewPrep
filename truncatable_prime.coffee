@@ -9,7 +9,10 @@ max_right_truncatable_number = (n, f) ->
   # the first n-1 digits before having to iterate through
   # the 10 possibilities for the last digit.
   if n < 10
-    max_digit n, f
+    candidate = n 
+    while candidate > 0
+      return candidate if f(candidate)
+      candidate -= 1
   else
     left = Math.floor n / 10
     right = n % 10
@@ -43,13 +46,6 @@ max_left_truncatable_number = (max, f) ->
       return n if is_left_truncatable n, f
       n -= 1
     throw Error "none found"
-
-max_digit = (n, f) ->
-  # return max digit <= n where fn(fn) is true
-  candidate = n 
-  while candidate > 0
-    return candidate if f(candidate)
-    candidate -= 1
   
 is_prime = (n) ->
   return false if n == 1
