@@ -1,9 +1,12 @@
+# You could have symmetric algorithms for max right and left
+# truncatable numbers, but they lend themselves to slightly
+# different optimizations.
+
 max_right_truncatable_number = (n, f) ->
+  # This algorithm only evaluates 37 numbers for primeness to
+  # get the max right truncatable prime < 1000000.
   if n < 10
-    candidate = n 
-    while candidate > 0
-      return candidate if f(candidate)
-      candidate -= 1
+    max_digit n, f
   else
     left = Math.floor n / 10
     right = n % 10
@@ -16,6 +19,16 @@ max_right_truncatable_number = (n, f) ->
       left -= 1
       right = 9
       
+# max_left_truncatable_number = (n, f) ->
+#   
+   
+max_digit = (n, f) ->
+  # return max digit <= n where fn(fn) is true
+  candidate = n 
+  while candidate > 0
+    return candidate if f(candidate)
+    candidate -= 1
+  
 is_prime = (n) ->
   return false if n == 1
   return true if n == 2
