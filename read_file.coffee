@@ -26,26 +26,27 @@ do ->
 #     done_cb: called back when there is no more text in the file
 LineByLineReader = (fn, cb) ->
   fs.open fn, 'r', (err, fd) ->
-    bufsize = 8192
+    bufsize = 256
     pos = 0
     text = ''
     eof = false
     closed = false
     reader =
       next_line: (line_cb, done_cb) ->
-        lines = text.split '\n'
-        if lines.length > 1
-          line = lines.shift()
-          text = lines.join '\n'
-          line_cb line
-        else if eof
-          console.log "eof", JSON.stringify text
+        if eof
           if text
             last_line = text
             text = ''
             line_cb last_line
           else
             done_cb()
+          return
+          
+        new_line_index = text.indexOf '\n'
+        if new_line_index >= 0
+          line = text.substr 0, new_line_index
+          text = text.substr new_line_index + 1, text.length - new_line_index - 1
+          line_cb line
         else
           frag = new Buffer(bufsize)
           fs.read fd, frag, 0, bufsize, pos, (err, bytesRead) ->
@@ -66,7 +67,8 @@ LineByLineReader = (fn, cb) ->
     cb reader
 
 # Test our interface here.
-do ->  
+do ->
+  console.log '---'
   fn = 'read_file.coffee'
   LineByLineReader fn, (reader) -> 
     callbacks =
