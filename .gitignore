@@ -1,4 +1,5 @@
 *.txt
 node_modules
 foo.*
+*.js
 crawl_output/code.htm
