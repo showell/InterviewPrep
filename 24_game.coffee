@@ -15,9 +15,9 @@ combo4 = (digits...) ->
   ]
   for permutation in permutations
     [i, j, k, m] = permutation
-    for rcombo in combos arr[i], arr[j]
-      answer = combo3 rcombo, arr[k], arr[m]  
-      return answer.expr if answer
+    for combo in combos arr[i], arr[j]
+      answer = combo3 combo, arr[k], arr[m]  
+      return answer if answer
   null
 
 combo3 = (arr...) ->
@@ -28,11 +28,16 @@ combo3 = (arr...) ->
   ]
   for permutation in permutations
     [i, j, k] = permutation
-    for rcombo in combos arr[j], arr[k]
-      for combo in combos arr[i], rcombo
-        return combo if combo.val == 24
+    for combo in combos arr[j], arr[k]
+      answer = combo2 arr[i], rcombo
+      return answer if answer
   null
-
+  
+combo2 = (a, b) ->
+  for combo in combos a, b
+    return combo.expr if combo.val == 24
+  null
+  
 combos = (a, b) ->
   [
     val: a.val + b.val
