@@ -23,13 +23,13 @@ combo4 = (digits...) ->
 combo3 = (arr...) ->
   permutations = [
     [0, 1, 2]
-    [1, 0, 2]
-    [2, 0, 1]
+    [0, 2, 1]
+    [1, 2, 0]
   ]
   for permutation in permutations
     [i, j, k] = permutation
-    for combo in combos arr[j], arr[k]
-      answer = combo2 arr[i], rcombo
+    for combo in combos arr[i], arr[j]
+      answer = combo2 combo, arr[k]
       return answer if answer
   null
   
