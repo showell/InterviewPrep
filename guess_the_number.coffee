@@ -2,7 +2,7 @@
 readline = require "readline"
 
 do ->
-  number = 1 + Math.floor(10 * Math.random())
+  number = Math.ceil(10 * Math.random())
   interface = readline.createInterface process.stdin, process.stdout
 
   guess = ->
