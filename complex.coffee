@@ -1,16 +1,33 @@
 # create an immutable Complex type
 class Complex
   constructor: (@r=0, @i=0) ->
+    @magnitude = @r*@r + @i*@i
+
   plus: (c2) ->
-    new Complex(@r + c2.r, @i + c2.i)
+    new Complex(
+      @r + c2.r,
+      @i + c2.i
+    )
+
   times: (c2) ->
-    new Complex(@r*c2.r - @i*c2.i, @r*c2.i + @i*c2.r)
+    new Complex(
+      @r*c2.r - @i*c2.i,
+      @r*c2.i + @i*c2.r
+    )
+
   negation: ->
-    new Complex(-1 * @r, -1 * @i)
+    new Complex(
+      -1 * @r,
+      -1 * @i
+    )
+
   inverse: ->
-    throw Error "no inverse" if @r is 0 and @i is 0
-    denom = @r * @r + @i * @i
-    new Complex(@r / denom, -1 * @i / denom)
+    throw Error "no inverse" if @magnitude is 0
+    new Complex(
+      @r / @magnitude,
+      -1 * @i / @magnitude
+    )
+
   toString: ->
     return "#{@r}" if @i == 0
     return "#{@i}i" if @r == 0
@@ -27,14 +44,17 @@ do ->
   sum = a.plus b
   console.log "(#{a}) + (#{b}) = #{sum}"
   
-  product = a.times(b)
+  product = a.times b
   console.log "(#{a}) * (#{b}) = #{product}"
   
-  diff = a.plus b.negation()
+  negation = b.negation()
+  console.log "-1 * (#{b}) = #{negation}"
+  
+  diff = a.plus negation
   console.log "(#{a}) - (#{b}) = #{diff}"
   
   inverse = b.inverse()
   console.log "1 / (#{b}) = #{inverse}"
   
-  quotient = product.times(b.inverse())
+  quotient = product.times inverse
   console.log "(#{product}) / (#{b}) = #{quotient}"
