@@ -1,13 +1,14 @@
-print_power_sets = (arr) ->
+print_power_set = (arr) ->
   console.log "POWER SET of #{arr}"
+  for subset in power_set(arr)
+    console.log subset
+ 
+power_set = (arr) ->  
+  result = []
   binary = (false for elem in arr)
-  power_set = []
   n = arr.length
-  output = ->
-    power_set = (arr[i] for i of binary when binary[i])
-    console.log power_set
-  while binary.length <= arr.length
-    output()
+  while binary.length <= n
+    result.push bin_to_arr binary, arr
     i = 0
     while true
       if binary[i]
@@ -17,7 +18,11 @@ print_power_sets = (arr) ->
         binary[i] = true
         break
     binary[i] = true
-      
-print_power_sets []XXXXX
-print_power_sets ['singleton'] 
-print_power_sets ['dog', 'c', 'b', 'a']
+  result
+ 
+bin_to_arr = (binary, arr) ->
+  (arr[i] for i of binary when binary[arr.length - i  - 1])
+ 
+print_power_set []
+print_power_set [4, 2, 1] 
+print_power_set ['dog', 'c', 'b', 'a']
