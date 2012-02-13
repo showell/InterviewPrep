@@ -1,3 +1,9 @@
+# Let's say you want to arrange the first N-squared natural numbers
+# in a spiral, where you fill in the numbers clockwise, starting from
+# the upper left corner.  This code computes the values for each x/y
+# coordinate of the square.  (Of course, you could precompute the values
+# iteratively, but what fun is that?)
+
 spiral_value = (x, y, n) ->
   prior_legs =
     N: 0
@@ -24,17 +30,13 @@ spiral_value = (x, y, n) ->
       border = dir
       
   inner_square_edge = n - 2 * min_edge_offset
-  upper_left_offset = n * n - inner_square_edge * inner_square_edge
-
-  corner_offset = upper_left_offset + prior_legs[border] * (inner_square_edge - 1)
-  
+  corner_offset = n * n - inner_square_edge * inner_square_edge
+  corner_offset += prior_legs[border] * (inner_square_edge - 1)
   corner_offset + edge_run(edge_offset)[border]()
   
 spiral_matrix = (n) ->
-  arr = []
   for y in [0...n]
-    arr.push (spiral_value x, y, n for x in [0...n])
-  arr
+    (spiral_value x, y, n for x in [0...n])
   
 do ->
   for n in [6, 7]
