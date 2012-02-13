@@ -13,15 +13,14 @@ spiral_value = (x, y, n) ->
       border = dir
       
   inner_square_size = n - 2 * edge_offset
+  edge_run =
+    N: -> x - edge_offset
+    E: -> inner_square_size + y - edge_offset - 1
+    S: -> 3 * inner_square_size - x + edge_offset - 3
+    W: -> 4 * inner_square_size - y + edge_offset - 4
+
   upper_left_offset = n * n - inner_square_size * inner_square_size
-  if border is 'N'
-    upper_left_offset + x - edge_offset
-  else if border is 'E'
-    upper_left_offset + inner_square_size + y - edge_offset - 1
-  else if border is 'S'
-    upper_left_offset + 3 * inner_square_size - x + edge_offset - 3
-  else
-    upper_left_offset + 4 * inner_square_size - y + edge_offset - 4
+  upper_left_offset + edge_run[border]()
   
 spiral_matrix = (n) ->
   arr = []
