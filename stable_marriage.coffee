@@ -17,14 +17,14 @@ class Person
   
   offer_mate: (free_mate, reject_mate_cb) =>  
     if @mate
-      if not @covets(free_mate)
-        console.log "#{free_mate.name} cannot steal #{@name} from #{@mate.name}"
-        reject_mate_cb free_mate
-      else
+      if @covets(free_mate)
         console.log "#{free_mate.name} steals #{@name} from #{@mate.name}"
         reject_mate_cb @mate
         free_mate.set_mate @
         @set_mate free_mate
+      else
+        console.log "#{free_mate.name} cannot steal #{@name} from #{@mate.name}"
+        reject_mate_cb free_mate
     else
       console.log "#{free_mate.name} gets #{@name} first"
       free_mate.set_mate @
