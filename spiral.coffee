@@ -1,15 +1,16 @@
 spiral_value = (x, y, n) ->
-  edge_offset = y
-  border = 'N'
+  north_edge_offset = y
   east_edge_offset = n - 1 - x
+  south_edge_offset = n - 1 - y
+  west_edge_offset = x
+  edge_offset = north_edge_offset
+  border = 'N'
   if east_edge_offset < edge_offset
     edge_offset = east_edge_offset
     border = 'E'
-  south_edge_offset = n - 1 - y
   if south_edge_offset < edge_offset
     edge_offset = south_edge_offset
     border = 'S'
-  west_edge_offset = x
   if west_edge_offset < edge_offset
     edge_offset = west_edge_offset
     border = 'W'
