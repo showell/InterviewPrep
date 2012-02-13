@@ -1,19 +1,17 @@
 spiral_value = (x, y, n) ->
-  north_edge_offset = y
-  east_edge_offset = n - 1 - x
-  south_edge_offset = n - 1 - y
-  west_edge_offset = x
-  edge_offset = north_edge_offset
+  edge_offsets =
+    N: y
+    E: n - 1 - x
+    S: n - 1 - y
+    W: x
+    
+  edge_offset = edge_offsets.N
   border = 'N'
-  if east_edge_offset < edge_offset
-    edge_offset = east_edge_offset
-    border = 'E'
-  if south_edge_offset < edge_offset
-    edge_offset = south_edge_offset
-    border = 'S'
-  if west_edge_offset < edge_offset
-    edge_offset = west_edge_offset
-    border = 'W'
+  for dir in ['E', 'S', 'W']
+    if edge_offsets[dir] < edge_offset
+      edge_offset = edge_offsets[dir]
+      border = dir
+      
   inner_square_size = n - 2 * edge_offset
   upper_left_offset = n * n - inner_square_size * inner_square_size
   if border is 'N'
