@@ -15,12 +15,19 @@ spiral_value = (x, y, n) ->
   inner_square_edge = n - 2 * edge_offset
   upper_left_offset = n * n - inner_square_edge * inner_square_edge
 
-  corner_offset = upper_left_offset
+  prior_legs =
+    N: 0
+    E: 1
+    S: 2
+    W: 3
+
+  corner_offset = upper_left_offset + prior_legs[border] * (inner_square_edge - 1)
+  
   edge_run =
     N: -> x - y
-    E: -> 1 * (inner_square_edge - 1) + y - edge_offset
-    S: -> 2 * (inner_square_edge - 1) + y - x
-    W: -> 3 * (inner_square_edge - 1) + edge_offsets.S - x
+    E: -> y - edge_offset
+    S: -> y - x
+    W: -> edge_offsets.S - edge_offset
 
   corner_offset + edge_run[border]()
   
