@@ -20,7 +20,7 @@ zig_zag_value = (x, y, n) ->
     else
       triangle_area + x
     
-  if x + y <= n
+  if x + y < n
     upper_triangle_zig_zag x, y
   else
     # For the bottom right part of the matrix, we essentially
