@@ -35,8 +35,10 @@ spiral_value = (x, y, n) ->
   corner_offset + edge_run(edge_offset)[border]()
   
 spiral_matrix = (n) ->
+  # return a nested array expression
   for y in [0...n]
-    (spiral_value x, y, n for x in [0...n])
+    for x in [0...n]
+      spiral_value x, y, n
   
 do ->
   for n in [6, 7]
