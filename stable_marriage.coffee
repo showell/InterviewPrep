@@ -14,9 +14,6 @@ class Person
     
   set_mate: (name) =>
     @mate = name
-    
-  is_single: =>
-    @mate is null
  
 persons_by_name = (persons) ->
   hsh = {}
@@ -30,25 +27,26 @@ mate_off = (guys, gals) ->
   gals_by_name = persons_by_name gals
 
   while free_guys.length > 0
-    free_guy = free_guys.pop()
+    free_guy = free_guys.shift()
     gal_name = free_guy.preferred_mate()
     gal = gals_by_name[gal_name]
-    if gal.is_single()
-      free_guy.set_mate gal_name
-      gal.set_mate free_guy.name
-    else
+    if gal.mate
       mate_name = gal.mate
       if gal.rank[mate_name] <= gal.rank[free_guy.name]
-        console.log "#{mate_name} holds #{gal.name} over #{free_guy.name}"
+        console.log "#{free_guy.name} cannot steal #{gal.name} from #{mate_name}"
         free_guy.reject()
         free_guys.push free_guy
       else
-        console.log "#{free_guy.name} wins #{gal.name} over #{mate_name}"
+        console.log "#{free_guy.name} steals #{gal.name} from #{mate_name}"
         old_mate = guys_by_name[mate_name]
         old_mate.reject()
         free_guy.set_mate gal_name
         gal.set_mate free_guy.name
         free_guys.push old_mate
+    else
+      console.log "#{free_guy.name} gets #{gal.name} first"
+      free_guy.set_mate gal_name
+      gal.set_mate free_guy.name
   
   for guy in guys
     console.log guy.name, guy.mate  
