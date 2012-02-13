@@ -14,6 +14,21 @@ class Person
     
   set_mate: (mate) =>
     @mate = mate
+  
+  offer_mate: (free_mate, reject_mate_cb) =>  
+    if @mate
+      if @rank[@mate.name] <= @rank[free_mate.name]
+        console.log "#{free_mate.name} cannot steal #{@name} from #{@mate.name}"
+        reject_mate_cb free_mate
+      else
+        console.log "#{free_mate.name} steals #{@name} from #{@mate.name}"
+        reject_mate_cb @mate
+        free_mate.set_mate @
+        @set_mate free_mate
+    else
+      console.log "#{free_mate.name} gets #{@name} first"
+      free_mate.set_mate @
+      @set_mate free_mate
  
 persons_by_name = (persons) ->
   hsh = {}
@@ -22,31 +37,19 @@ persons_by_name = (persons) ->
   hsh
      
 mate_off = (guys, gals) ->
-  free_guys = (guy for guy in guys)
+  free_pursuers = (guy for guy in guys)
   guys_by_name = persons_by_name guys
   gals_by_name = persons_by_name gals
 
-  while free_guys.length > 0
-    free_guy = free_guys.shift()
-    gal_name = free_guy.preferred_mate_name()
+  while free_pursuers.length > 0
+    free_pursuer = free_pursuers.shift()
+    gal_name = free_pursuer.preferred_mate_name()
     gal = gals_by_name[gal_name]
-    if gal.mate
-      mate_name = gal.mate.name
-      if gal.rank[mate_name] <= gal.rank[free_guy.name]
-        console.log "#{free_guy.name} cannot steal #{gal.name} from #{mate_name}"
-        free_guy.reject()
-        free_guys.push free_guy
-      else
-        console.log "#{free_guy.name} steals #{gal.name} from #{mate_name}"
-        old_mate = gal.mate
-        old_mate.reject()
-        free_guy.set_mate gal
-        gal.set_mate free_guy
-        free_guys.push old_mate
-    else
-      console.log "#{free_guy.name} gets #{gal.name} first"
-      free_guy.set_mate gal
-      gal.set_mate free_guy
+    reject_mate_cb = (guy) ->
+      guy.reject()
+      free_pursuers.push guy
+    gal.offer_mate free_pursuer, reject_mate_cb
+
   
   for guy in guys
     console.log guy.name, guy.mate.name  
