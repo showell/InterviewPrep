@@ -25,8 +25,11 @@ zig_zag_value = (x, y, n) ->
   else
     # For the bottom right part of the matrix, we essentially
     # use reflection to count backward.
-    v = zig_zag_value(n-x-1, n-y-1, n-1)
-    n * n - v - 1
+    bottom_right_cell = n * n - 1
+    n -= 1
+    diag = 2 * n - diag
+    v = upper_triangle_zig_zag(diag, n-x, n-y)
+    bottom_right_cell - v
     
 zig_zag_matrix = (n) ->
   row = (i) -> (zig_zag_value i, j, n for j in [0...n])
