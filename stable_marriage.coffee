@@ -6,7 +6,7 @@ class Person
     for preference, i in @preferences
       @rank[preference] = i
   
-  preferred_mate: =>
+  preferred_mate_name: =>
     @preferences[@best_mate_rank]
     
   reject: =>
@@ -28,7 +28,7 @@ mate_off = (guys, gals) ->
 
   while free_guys.length > 0
     free_guy = free_guys.shift()
-    gal_name = free_guy.preferred_mate()
+    gal_name = free_guy.preferred_mate_name()
     gal = gals_by_name[gal_name]
     if gal.mate
       mate_name = gal.mate
