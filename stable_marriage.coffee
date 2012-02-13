@@ -17,15 +17,18 @@ class Person
     
   is_single: =>
     @mate is null
-    
+ 
+persons_by_name = (persons) ->
+  hsh = {}
+  for person in persons
+    hsh[person.name] = person
+  hsh
+     
 mate_off = (guys, gals) ->
   free_guys = (guy for guy in guys)
-  guys_by_name = {}
-  for guy in guys
-    guys_by_name[guy.name] = guy
-  gals_by_name = {}
-  for gal in gals
-    gals_by_name[gal.name] = gal
+  guys_by_name = persons_by_name guys
+  gals_by_name = persons_by_name gals
+
   while free_guys.length > 0
     free_guy = free_guys.pop()
     gal_name = free_guy.preferred_mate()
