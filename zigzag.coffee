@@ -9,9 +9,10 @@
 
 zig_zag_value = (x, y, n) ->
 
-  upper_triangle_zig_zag = (diag, x, y) ->
+  upper_triangle_zig_zag = (x, y) ->
     # calculate the area of the triangle from the prior
     # diagonals
+    diag = x + y
     triangle_area = diag * (diag+1) / 2
     # then add the offset along the diagonal
     if diag % 2 == 0
@@ -19,16 +20,14 @@ zig_zag_value = (x, y, n) ->
     else
       triangle_area + x
     
-  diag = x + y
-  if diag < n
-    upper_triangle_zig_zag diag, x, y
+  if x + y <= n
+    upper_triangle_zig_zag x, y
   else
     # For the bottom right part of the matrix, we essentially
     # use reflection to count backward.
     bottom_right_cell = n * n - 1
     n -= 1
-    diag = 2 * n - diag
-    v = upper_triangle_zig_zag(diag, n-x, n-y)
+    v = upper_triangle_zig_zag(n-x, n-y)
     bottom_right_cell - v
     
 zig_zag_matrix = (n) ->
