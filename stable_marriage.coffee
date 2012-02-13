@@ -17,7 +17,7 @@ class Person
   
   offer_mate: (free_mate, reject_mate_cb) =>  
     if @mate
-      if @rank[@mate.name] <= @rank[free_mate.name]
+      if not @covets(free_mate)
         console.log "#{free_mate.name} cannot steal #{@name} from #{@mate.name}"
         reject_mate_cb free_mate
       else
@@ -29,6 +29,12 @@ class Person
       console.log "#{free_mate.name} gets #{@name} first"
       free_mate.set_mate @
       @set_mate free_mate
+      
+  happiness: =>
+    @rank[@mate.name]
+    
+  covets: (other_mate) =>
+    @rank[other_mate.name] <= @rank[@mate.name]
  
 persons_by_name = (persons) ->
   hsh = {}
@@ -50,9 +56,38 @@ mate_off = (guys, gals) ->
       free_pursuers.push guy
     gal.offer_mate free_pursuer, reject_mate_cb
 
-  
-  for guy in guys
-    console.log guy.name, guy.mate.name  
+
+report_on_mates = (guys) ->
+  console.log "\n----Marriage Report"
+  for guy, i in guys
+    throw Error("illegal marriage") if guy.mate.mate isnt guy
+    console.log guy.name, guy.mate.name, \
+      "(his choice #{guy.happiness()}, her choice #{guy.mate.happiness()} )"
+
+report_potential_adulteries = (guys) ->
+  for guy1, i in guys
+    gal1 = guy1.mate
+    for j in [0...i]
+      guy2 = guys[j]
+      gal2 = guy2.mate
+      if guy1.covets(gal2) and gal2.covets(guy1)
+        console.log "#{guy1.name} and #{gal2.name} would stray"
+      if guy2.covets(gal1) and gal1.covets(guy2)
+        console.log "#{guy2.name} and #{gal1.name} would stray"
+
+perturb = (guys) ->
+  # mess up marriages by swapping two couples...this is mainly to drive
+  # out that report_potential_adulteries will actually work
+  guy0 = guys[0]
+  guy1 = guys[1]
+  gal0 = guy0.mate
+  gal1 = guy1.mate
+  console.log "\nPerturbing with #{guy0.name}, #{gal0.name}, #{guy1.name}, #{gal1.name}"
+  guy0.set_mate gal1
+  guy1.set_mate gal0
+  gal1.set_mate guy0
+  gal0.set_mate guy1
+
 
 Population = ->
   guy_preferences =
@@ -83,5 +118,11 @@ Population = ->
   gals = (new Person(name, preferences) for name, preferences of gal_preferences)
   [guys, gals]
  
-[guys, gals] = Population()
-mate_off guys, gals
+do ->
+  [guys, gals] = Population()
+  mate_off guys, gals
+  report_on_mates guys
+  report_potential_adulteries guys
+  perturb guys
+  report_on_mates guys
+  report_potential_adulteries guys
