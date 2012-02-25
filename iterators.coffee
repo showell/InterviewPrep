@@ -8,8 +8,8 @@ print_odd_squares_until_overflow = (iterator) ->
       break if e is "StopIteration"
       throw e
     sq = val * val
-    continue if sq % 2 == 0
     break if sq > 500
+    continue if sq % 2 == 0
     console.log sq
   return
 
@@ -35,3 +35,17 @@ do ->
     
   iterator = natural_numbers()
   print_odd_squares_until_overflow iterator
+  
+array_iterator = (arr) ->
+  # turn an array into an iterator
+  i = -1
+  ->
+    i += 1
+    throw "StopIteration" if i >= arr.length
+    arr[i]
+    
+do ->
+  arr = [5, 7, 8, 100, 3, 2]
+  print_odd_squares_until_overflow array_iterator(arr)
+  
+  
