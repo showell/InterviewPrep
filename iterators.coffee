@@ -3,7 +3,7 @@ print_odd_squares_until_overflow = (iterator) ->
   # it would be nice to sugar the next six lines                  
   loop
     try
-      val = iterator()
+      val = iterator.next()
     catch e
       break if e is "StopIteration"
       throw e
@@ -16,7 +16,7 @@ print_odd_squares_until_overflow = (iterator) ->
 do ->
   range_iterator = (low, high) ->
     i = low - 1
-    ->
+    next: ->
       i += 1
       throw "StopIteration" if i > high
       i
@@ -28,7 +28,7 @@ do ->
   natural_numbers = ->
     # infinite iterator
     i = 0
-    ->
+    next: ->
       val = i
       i += 1
       val
@@ -39,7 +39,7 @@ do ->
 array_iterator = (arr) ->
   # turn an array into an iterator
   i = -1
-  ->
+  next: ->
     i += 1
     throw "StopIteration" if i >= arr.length
     arr[i]
