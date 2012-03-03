@@ -1,22 +1,28 @@
 print_odd_squares_until_overflow = (iterator) ->
   console.log "-- Squares:"
-  # it would be nice to sugar the next six lines                  
+  # it would be nice to sugar the next three lines                  
   loop
-    try
-      val = iterator.next()
-    catch e
-      break if e is "StopIteration"
-      throw e
+    [done, val] = iterator.next()
+    break if done
     sq = val * val
     break if sq > 500
     continue if sq % 2 == 0
     console.log sq
   return
 
+box = (f) ->
+  ->
+    try
+      val = f()
+    catch e
+      return [true] if e is "StopIteration"
+      throw e
+    [false, val]
+
 do ->
   range_iterator = (low, high) ->
     i = low - 1
-    next: ->
+    next: box ->
       i += 1
       throw "StopIteration" if i > high
       i
@@ -28,7 +34,7 @@ do ->
   natural_numbers = ->
     # infinite iterator
     i = 0
-    next: ->
+    next: box ->
       val = i
       i += 1
       val
@@ -39,7 +45,7 @@ do ->
 array_iterator = (arr) ->
   # turn an array into an iterator
   i = -1
-  next: ->
+  next: box ->
     i += 1
     throw "StopIteration" if i >= arr.length
     arr[i]
