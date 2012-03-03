@@ -10,16 +10,18 @@ print_odd_squares_until_overflow = (iterator) ->
     console.log sq
   return
 
-box = (f) ->
-  ->
-    try
-      val = f()
-    catch e
-      return [true] if e is "StopIteration"
-      throw e
-    [false, val]
-
 do ->
+  box = (f) ->
+    ->
+      try
+        val = f()
+      catch e
+        return [true] if e is "StopIteration"
+        throw e
+      [false, val]
+
+  # create our iterator using Python style, but then use "box"
+  # so that the caller doesn't see exceptions
   range_iterator = (low, high) ->
     i = low - 1
     next: box ->
@@ -32,23 +34,24 @@ do ->
 
 do ->
   natural_numbers = ->
-    # infinite iterator
+    # infinite iterator, and we do our own boxing
     i = 0
-    next: box ->
+    next: ->
       val = i
       i += 1
-      val
+      [false, val]
     
   iterator = natural_numbers()
   print_odd_squares_until_overflow iterator
   
 array_iterator = (arr) ->
-  # turn an array into an iterator
+  # turn an array into an iterator that supports
+  # the "boxing" protocol
   i = -1
-  next: box ->
+  next: ->
     i += 1
-    throw "StopIteration" if i >= arr.length
-    arr[i]
+    return [true] if i >= arr.length
+    [false, arr[i]]
     
 do ->
   arr = [5, 7, 8, 100, 3, 2]
