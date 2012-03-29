@@ -2,30 +2,16 @@
 soupselect = require 'soupselect'
 htmlparser = require 'htmlparser'
 
-# configure these for your language
-LANGUAGE = 'CoffeeScript'
-LANGUAGE_WEBSITE = "http://coffeescript.org"
-LANG_SELECTOR = 'pre.coffeescript.highlighted_source'
-BLACKLIST = (title) ->
-  # These are programs that just don't add a lot of value out of context,
-  # or that have distracting style issues.
-  return true if title in [
-    '24 game' # whitespace
-    '100 doors'
-    'A+B'
-    'Comments'
-    'CSV to HTML translation'
-    'Empty program'
-    'First-class functions' # for now
-    'Infinity'
-    'Permutations' # whitespace
-    'Quine'
-  ]
-  return true if title.match /Hello world/
-  return true if title.match /Loops\//
-  return true if title.match /Vigen.* cipher/ # unicode
-  false
-  
+CONFIG = './coffee_rosetta.js'
+config = require CONFIG
+
+{
+  LANGUAGE,
+  LANGUAGE_WEBSITE,
+  LANG_SELECTOR,
+  BLACKLIST
+} = config
+
 ROSETTA_INTRO = """
   <p>
   This site aggregates some content from <a href="http://rosettacode.org">Rosetta Code</a>, which is a website
@@ -46,6 +32,10 @@ ROSETTA_INTRO = """
   <p>
   Be a contributor!  You can enhance the Rosetta Code site by <a href="http://rosettacode.org/wiki/Reports:Tasks_not_implemented_in_#{LANGUAGE}">
   implementing new tasks for #{LANGUAGE}</a>.
+  </p>
+
+  <p>
+  If you enjoy this page, please tweet it and /cc @shizowell.
   </p>
 """
 
@@ -74,13 +64,14 @@ HOST = 'rosettacode.org'
 
 http = require 'http'
 
-process_task_page = (link_info, done) ->
+process_task_page = (i_task, link_info, done) ->
   path = link_info.href
   page_link = "http://#{HOST}#{link_info.href}"
   lang_link = "#{page_link}##{LANGUAGE}"
   html = """
     <hr>
     <a name="#{link_info.title}" />
+    Example #{i_task}
     <h2><a href=#{page_link}>#{link_info.title}</a></h2>
     <a href=#{lang_link}>#{LANGUAGE} section on Rosetta Code</a>
     <br>
@@ -118,8 +109,10 @@ process_language_page = (done) ->
       title: link.attribs.title
     links = (link_info(link) for link in links)
     links = (link for link in links when !BLACKLIST link.title)
+    i_task = 0
     task_page_handler = (link_info, done) ->
-      process_task_page link_info, (new_html) ->
+      i_task += 1
+      process_task_page i_task, link_info, (new_html) ->
         html += new_html
         done()
     process_list links, task_page_handler, ->
@@ -129,10 +122,13 @@ process_language_page = (done) ->
   process_page "/wiki/Category:#{LANGUAGE}", handler
 
 process_page = (path, cb) -> 
-  wget path, (body) ->
+  wget_cb = (body) ->
     handler = new htmlparser.DefaultHandler(cb)
     parser = new htmlparser.Parser(handler)
     parser.parseComplete body
+  error = ->
+    console.log 'NO CONTENT, probably misconfigured'
+  wget path, wget_cb, error
 
 process_list = (list, f, done_cb) ->
   # WOO HOO! async complexity, hopefully somewhat encapsulated here
@@ -148,7 +144,7 @@ process_list = (list, f, done_cb) ->
       done_cb()
   _process()
 
-wget = (path, cb) ->
+wget = (path, cb, error_cb) ->
   options =
     host: HOST
     path: path
@@ -160,7 +156,10 @@ wget = (path, cb) ->
     res.on 'data', (chunk) ->
       s += chunk
     res.on 'end', ->
-      cb s
+      if s is ''
+        error_cb()
+      else
+        cb s
   req.end()
 
 color_syntax = (source, callback) ->
