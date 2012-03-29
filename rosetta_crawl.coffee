@@ -2,15 +2,10 @@
 soupselect = require 'soupselect'
 htmlparser = require 'htmlparser'
 
-CONFIG = './coffee_rosetta.js'
-config = require CONFIG
+#CONFIG = './coffee_rosetta.js'
+CONFIG = './go_rosetta.js'
 
-{
-  LANGUAGE,
-  LANGUAGE_WEBSITE,
-  LANG_SELECTOR,
-  BLACKLIST
-} = config
+{ LANGUAGE, LANGUAGE_WEBSITE, LANG_SELECTOR, BLACKLIST } = require CONFIG
 
 ROSETTA_INTRO = """
   <p>
@@ -83,7 +78,7 @@ process_task_page = (i_task, link_info, done) ->
 
     i = 0
     process_snippet = (snippet, done) ->
-      source = fix_tabs dom_to_text snippet
+      source = dom_to_text snippet
       color_syntax source, (code) ->
         if snippets.length > 1
           i += 1
@@ -186,9 +181,6 @@ dom_to_text = (dom) ->
       s += dom_to_text child
   html_decode(s)
 
-fix_tabs = (s) ->
-  s.replace "\t", "TABS, REALLY?"
-  
 html_decode = (s) ->
   s = s.replace /&#(\d+);/g, (a, b) ->
     return ' ' if b == '160' # npbsp
