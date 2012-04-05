@@ -3,7 +3,7 @@ soupselect = require 'soupselect'
 htmlparser = require 'htmlparser'
 
 #CONFIG = './coffee_rosetta.js'
-CONFIG = './go_rosetta.js'
+CONFIG = './python_rosetta.js'
 
 { LANGUAGE, LANGUAGE_WEBSITE, LANG_SELECTOR, BLACKLIST } = require CONFIG
 
