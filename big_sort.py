@@ -112,12 +112,19 @@ def make_visitor():
         order_assurer.visit(item)
     return visit
 
+def sample_data():
+    for i in range(num_items):
+        n = random.randint(1, 100000)
+        yield n
+
 storage = Storage()
 chunk_size = 100
-num_items = 50000
+num_items = 100000
+# 1000, 1000000 -> 165s, 44s
+# 1000, 500000 -> 78s, 20s
+# 100, 100000 -> 14s
 idx = make_root_tree(chunk_size, storage)
-for i in range(num_items):
-    n = random.randint(1, 100000)
+for n in sample_data():
     add_to_tree(idx, n)
 
 tree_visit(idx, make_visitor())
