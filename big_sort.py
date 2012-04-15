@@ -4,6 +4,8 @@ import glob
 
 class Storage:
     def __init__(self):
+        for fn in glob.glob('/tmp/foo*'):
+            os.remove(fn)
         self.n = 0
 
     def get_fn(self):
@@ -113,8 +115,6 @@ def make_visitor():
 storage = Storage()
 chunk_size = 100
 num_items = 50000
-for fn in glob.glob('/tmp/foo*'):
-    os.remove(fn)
 idx = make_root_tree(chunk_size, storage)
 for i in range(num_items):
     n = random.randint(1, 100000)
