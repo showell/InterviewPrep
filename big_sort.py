@@ -5,9 +5,10 @@
 # when children get added to, supply split callback and count callback
 import random
 
-def make_index(max, elements = None):
-    if not elements:
-        elements = []
+def make_root_index(max):
+    return make_index(max, [])
+
+def make_index(max, elements):
     return {
         'elements': elements,
         'children': None,
@@ -43,7 +44,7 @@ def print_index(index):
         for item in index['elements']:
             print item
 
-idx = make_index(10)
+idx = make_root_index(10)
 for i in range(10):
     n = random.randint(1, 1000)
     add_to_index(idx, n)
