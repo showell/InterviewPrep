@@ -56,10 +56,13 @@ def add_to_simple_tree(tree, item):
     if cnt >= max:
         split_tree(tree, max, cnt)
 
+def read_ints(fn):
+    elements = [int(line.strip()) for line in open(fn)]
+    return elements
+
 def split_tree(tree, max, cnt):
     fn = tree['fn']
-    elements = [int(line.strip()) for line in open(fn)]
-    elements.sort()
+    elements = sorted(read_ints(fn))
     m = (cnt + 1) // 2
     fn_0 = fn + '_0'
     fn_1 = fn + '_1'
@@ -78,12 +81,12 @@ def print_tree(tree):
             print_tree(idx)
     else:
         fn = tree['fn']
-        for line in open(fn):
-            item = line.strip()
+        print fn
+        for item in sorted(read_ints(fn)):
             print item
 
-idx = make_root_tree(10, '/tmp/foo')
-for i in range(35):
+idx = make_root_tree(10000, '/tmp/foo')
+for i in range(1000000):
     n = random.randint(1, 1000)
     add_to_tree(idx, n)
 print_tree(idx)
