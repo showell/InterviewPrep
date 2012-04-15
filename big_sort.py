@@ -89,9 +89,9 @@ def tree_visit(tree, visitor):
             tree_visit(idx, visitor)
     else:
         fn = tree['fn']
-        print fn
         items = read_ints(fn)
         items.sort()
+        print fn, len(items)
         for item in items:
             visitor(item)
 
@@ -108,7 +108,6 @@ class OrderAssurer:
 def make_visitor():
     order_assurer = OrderAssurer()
     def visit(item):
-        print item
         order_assurer.visit(item)
     return visit
 
@@ -119,7 +118,7 @@ def sample_data():
 
 storage = Storage()
 chunk_size = 100
-num_items = 100000
+num_items = 10000
 # 1000, 1000000 -> 165s, 44s
 # 1000, 500000 -> 78s, 20s
 # 100, 100000 -> 14s
