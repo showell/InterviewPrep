@@ -1,15 +1,15 @@
 # list of leaves
-# index
-# when you add to list of leaves beyond 1000, split, create list of indexes
-# when you have more than 1000 indexes, split
+# tree
+# when you add to list of leaves beyond 1000, split, create list of treees
+# when you have more than 1000 treees, split
 # when children get added to, supply split callback and count callback
 import random
 import os
 
-def make_root_index(max, fn):
-    return make_index(max, fn, [])
+def make_root_tree(max, fn):
+    return make_tree(max, fn, [])
 
-def make_index(max, fn, elements):
+def make_tree(max, fn, elements):
     f = open(fn, 'w')
     for item in elements:
         f.write(str(item) + '\n')
@@ -21,49 +21,56 @@ def make_index(max, fn, elements):
         'max': max,
     }
 
-def add_to_index(index, item):
-    add_to_simple_index(index, item)
+def add_to_tree(tree, item):
+    children = tree['children']
+    if children:
+        add_to_parent_tree(tree, children, item)
+    else:
+        add_to_simple_tree(tree, item)
 
-def add_to_simple_index(index, item):
-    max = index['max']
-    fn = index['fn']
+def add_to_parent_tree(tree, children, item):
+    pass
+
+def add_to_simple_tree(tree, item):
+    max = tree['max']
+    fn = tree['fn']
     f = open(fn, 'a')
     f.write(str(item) + '\n')
     f.close()
-    index['cnt'] += 1
-    cnt = index['cnt']
+    tree['cnt'] += 1
+    cnt = tree['cnt']
     if cnt >= max:
-        split_index(index, cnt)
+        split_tree(tree, cnt)
 
-def split_index(index, cnt):
-    fn = index['fn']
+def split_tree(tree, cnt):
+    fn = tree['fn']
     elements = [line.strip() for line in open(fn)]
     elements.sort()
     m = (cnt + 1) // 2
     fn_0 = fn + '_0'
     fn_1 = fn + '_1'
-    idx_0 = make_index(max, fn_0, elements[0:m])
-    idx_1 = make_index(max, fn_1, elements[m:cnt])
-    index['children'] = [idx_0, idx_1]
-    index['cnt'] = 2
-    index['fn'] = None
+    idx_0 = make_tree(max, fn_0, elements[0:m])
+    idx_1 = make_tree(max, fn_1, elements[m:cnt])
+    tree['children'] = [idx_0, idx_1]
+    tree['cnt'] = 2
+    tree['fn'] = None
     os.remove(fn)
 
 
-def print_index(index):
-    if index['children']:
-        for idx in index['children']:
+def print_tree(tree):
+    if tree['children']:
+        for idx in tree['children']:
             print '--'
-            print_index(idx)
+            print_tree(idx)
     else:
-        fn = index['fn']
+        fn = tree['fn']
         for line in open(fn):
             item = line.strip()
             print item
 
-idx = make_root_index(10, '/tmp/foo')
-for i in range(10):
+idx = make_root_tree(10, '/tmp/foo')
+for i in range(11):
     n = random.randint(1, 1000)
-    add_to_index(idx, n)
-print_index(idx)
+    add_to_tree(idx, n)
+print_tree(idx)
     
