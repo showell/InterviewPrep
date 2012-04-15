@@ -1,8 +1,3 @@
-# list of leaves
-# tree
-# when you add to list of leaves beyond 1000, split, create list of treees
-# when you have more than 1000 treees, split
-# when children get added to, supply split callback and count callback
 import random
 import os
 import glob
@@ -86,8 +81,8 @@ def tree_visit(tree, visitor):
         for item in sorted(read_ints(fn)):
             visitor(item)
 
-chunk_size = 10
-num_items = 5000
+chunk_size = 100
+num_items = 50000
 for fn in glob.glob('/tmp/foo*'):
     os.remove(fn)
 idx = make_root_tree(chunk_size, '/tmp/foo')
