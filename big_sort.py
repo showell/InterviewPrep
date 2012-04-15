@@ -5,6 +5,7 @@
 # when children get added to, supply split callback and count callback
 import random
 import os
+import glob
 
 def make_root_tree(max, fn):
     return make_tree(max, fn, [])
@@ -74,20 +75,26 @@ def split_tree(tree, max, cnt):
     os.remove(fn)
 
 
-def print_tree(tree):
+def tree_visit(tree, visitor):
     if tree['children']:
         for idx in tree['children']:
             print '--'
-            print_tree(idx)
+            tree_visit(idx, visitor)
     else:
         fn = tree['fn']
         print fn
         for item in sorted(read_ints(fn)):
-            print item
+            visitor(item)
 
-idx = make_root_tree(10000, '/tmp/foo')
-for i in range(1000000):
-    n = random.randint(1, 1000)
+chunk_size = 10
+num_items = 5000
+for fn in glob.glob('/tmp/foo*'):
+    os.remove(fn)
+idx = make_root_tree(chunk_size, '/tmp/foo')
+for i in range(num_items):
+    n = random.randint(1, 100000)
     add_to_tree(idx, n)
-print_tree(idx)
+def visit(item):
+    print item
+tree_visit(idx, visit)
     
