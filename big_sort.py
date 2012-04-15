@@ -78,8 +78,27 @@ def tree_visit(tree, visitor):
     else:
         fn = tree['fn']
         print fn
-        for item in sorted(read_ints(fn)):
+        items = read_ints(fn)
+        items.sort()
+        for item in items:
             visitor(item)
+
+class OrderAssurer:
+    def __init__(self):
+        self.prev = None
+
+    def visit(self, item):
+        if self.prev:
+            if self.prev > item:
+                raise Exception('sort is broken')
+        self.prev = item
+
+def make_visitor():
+    order_assurer = OrderAssurer()
+    def visit(item):
+        print item
+        order_assurer.visit(item)
+    return visit
 
 chunk_size = 100
 num_items = 50000
@@ -89,7 +108,6 @@ idx = make_root_tree(chunk_size, '/tmp/foo')
 for i in range(num_items):
     n = random.randint(1, 100000)
     add_to_tree(idx, n)
-def visit(item):
-    print item
-tree_visit(idx, visit)
+
+tree_visit(idx, make_visitor())
     
