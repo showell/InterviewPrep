@@ -2,10 +2,20 @@ import random
 import os
 import glob
 
-def make_root_tree(max, fn):
-    return make_tree(max, fn, [])
+class Storage:
+    def __init__(self):
+        self.n = 0
 
-def make_tree(max, fn, elements):
+    def get_fn(self):
+        self.n += 1
+        fn = "/tmp/foo_{n}".format(n = self.n)
+        return fn
+
+def make_root_tree(max, storage):
+    return make_tree(max, storage, [])
+
+def make_tree(max, storage, elements):
+    fn = storage.get_fn()
     f = open(fn, 'w')
     for item in elements:
         f.write(str(item) + '\n')
@@ -16,6 +26,7 @@ def make_tree(max, fn, elements):
         head = None
     return {
         'fn': fn,
+        'storage': storage,
         'cnt': 0,
         'children': None,
         'max': max,
@@ -60,10 +71,9 @@ def split_tree(tree, max, cnt):
     fn = tree['fn']
     elements = sorted(read_ints(fn))
     m = (cnt + 1) // 2
-    fn_0 = fn + '_0'
-    fn_1 = fn + '_1'
-    idx_0 = make_tree(max, fn_0, elements[0:m])
-    idx_1 = make_tree(max, fn_1, elements[m:cnt])
+    storage = tree['storage']
+    idx_0 = make_tree(max, storage, elements[0:m])
+    idx_1 = make_tree(max, storage, elements[m:cnt])
     tree['children'] = [idx_0, idx_1]
     tree['cnt'] = 2
     tree['fn'] = None
@@ -100,11 +110,12 @@ def make_visitor():
         order_assurer.visit(item)
     return visit
 
+storage = Storage()
 chunk_size = 100
 num_items = 50000
 for fn in glob.glob('/tmp/foo*'):
     os.remove(fn)
-idx = make_root_tree(chunk_size, '/tmp/foo')
+idx = make_root_tree(chunk_size, storage)
 for i in range(num_items):
     n = random.randint(1, 100000)
     add_to_tree(idx, n)
