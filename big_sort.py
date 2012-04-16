@@ -58,15 +58,14 @@ def make_tree(max, storage, elements):
     lst = DiskList(fn, elements)
     rec = Record()
     rec.storage = storage
-    rec.children = None
+    rec.children = False
     rec.max = max
     rec.lst = lst
     return rec
 
 def add_to_tree(tree, item):
-    children = tree.children
-    if children:
-        add_to_parent_tree(tree, children, item)
+    if tree.children:
+        add_to_parent_tree(tree, tree.lst.items, item)
     else:
         add_to_simple_tree(tree, item)
 
@@ -79,6 +78,11 @@ def get_position(children, item):
             return i
     return last
 
+class BranchList:
+    def __init__(self, items):
+        self.items = items
+        self.head = items[0].lst.head
+        
 def add_to_parent_tree(tree, children, item):
     pos = get_position(children, item)
     add_to_tree(children[pos], item)
@@ -91,25 +95,19 @@ def add_to_simple_tree(tree, item):
     if cnt >= max:
         split_tree(tree, lst, max, cnt)
 
-def read_ints(fn):
-    elements = [int(line.strip()) for line in open(fn)]
-    return elements
-
 def split_tree(tree, lst, max, cnt):
     elements = sorted(lst.elements())
     m = (cnt + 1) // 2
     storage = tree.storage
-    head = lst.head
     lst.close()
     tree_0 = make_tree(max, storage, elements[0:m])
     tree_1 = make_tree(max, storage, elements[m:cnt])
-    tree.children = [tree_0, tree_1]
-    tree.lst = Record()
-    tree.lst.head = head
+    tree.children = True
+    tree.lst = BranchList([tree_0, tree_1])
 
 def tree_visit(tree, visitor):
     if tree.children:
-        for idx in tree.children:
+        for idx in tree.lst.items:
             tree_visit(idx, visitor)
     else:
         lst = tree.lst
