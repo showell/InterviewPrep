@@ -21,11 +21,11 @@ class DiskList:
         self.cnt = len(elements)
         if self.cnt > 0:
             self.head = elements[0]
-        self.cache = elements
-        self.mem.alloc(len(elements))
+        self.cache = []
         f = open(self.fn, 'w')
+        for item in elements:
+            f.write(str(item) + '\n')
         f.close()
-        self.flush()
 
     def append(self, item):
         if self.cnt == 0:
@@ -33,7 +33,7 @@ class DiskList:
         self.cnt += 1
         self.mem.alloc(1)
         self.cache.append(item)
-        if len(self.cache) + self.mem.cnt > 300000:
+        if len(self.cache) + self.mem.cnt > 500000:
             self.flush()
 
     def flush(self):
