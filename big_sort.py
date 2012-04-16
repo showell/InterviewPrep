@@ -2,13 +2,27 @@ import random
 import os
 import glob
 
+class Memory:
+    def __init__(self):
+        self.cnt = 0
+
+    def alloc(self, cnt):
+        self.cnt += cnt
+
+    def free(self, cnt):
+        self.cnt -= cnt
+memory = Memory()
+
+
 class DiskList:
     def __init__(self, fn, elements):
+        self.mem = memory
         self.fn = fn
         self.cnt = len(elements)
         if self.cnt > 0:
             self.head = elements[0]
         self.cache = elements
+        self.mem.alloc(len(elements))
         f = open(self.fn, 'w')
         f.close()
         self.flush()
@@ -17,8 +31,9 @@ class DiskList:
         if self.cnt == 0:
             self.head = item
         self.cnt += 1
+        self.mem.alloc(1)
         self.cache.append(item)
-        if len(self.cache) == 1000:
+        if self.mem.cnt > 100000:
             self.flush()
 
     def flush(self):
@@ -26,6 +41,8 @@ class DiskList:
         for item in self.cache:
             f.write(str(item) + '\n')
         f.close()
+        cnt = len(self.cache)
+        self.mem.free(cnt)
         self.cache = []
 
     def elements(self):
@@ -152,9 +169,9 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 1000
-    num_items = 50000
-    # 5 mill in 1:44
+    chunk_size = 20000
+    num_items = 5000000
+    # 5 mill in 2:00
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
         add_to_tree(idx, n)
@@ -162,6 +179,7 @@ def test():
     visitor = Visitor()
     tree_visit(idx, visitor.visit)
     print visitor.num_visited
+    print memory.cnt
     
 def test_disk_list():
     dl = DiskList('/tmp/foo', [5])
