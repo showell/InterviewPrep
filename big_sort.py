@@ -5,30 +5,43 @@ import glob
 class DiskList:
     def __init__(self, fn, elements):
         self.fn = fn
-        f = open(self.fn, 'w')
-        for item in elements:
-            f.write(str(item) + '\n')
-        f.close()
         self.cnt = len(elements)
         if self.cnt > 0:
             self.head = elements[0]
+        self.caching = True
+        if self.caching:
+            self.cache = elements
+        else:
+            f = open(self.fn, 'w')
+            for item in elements:
+                f.write(str(item) + '\n')
+            f.close()
 
     def append(self, item):
         if self.cnt == 0:
             self.head = item
         self.cnt += 1
-        f = open(self.fn, 'a')
-        f.write(str(item) + '\n')
-        f.close()
+        if self.caching:
+            self.cache.append(item)
+        else:
+            f = open(self.fn, 'a')
+            f.write(str(item) + '\n')
+            f.close()
 
     def elements(self):
-        fn = self.fn
-        elements = [int(line.strip()) for line in open(fn)]
-        return elements
+        if self.caching:
+            return [int(item) for item in self.cache] # for now
+        else:
+            fn = self.fn
+            elements = [int(line.strip()) for line in open(fn)]
+            return elements
     
     def close(self):
-        fn = self.fn
-        os.remove(fn)
+        if self.caching:
+            return # for now
+        else:
+            fn = self.fn
+            os.remove(fn)
 
 class Storage:
     def __init__(self):
@@ -136,8 +149,8 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 100
-    num_items = 20000
+    chunk_size = 1000
+    num_items = 500000
     # 1000, 1000000 -> 165s, 44s
     # 1000, 500000 -> 78s, 20s
     # 100, 100000 -> 14s
