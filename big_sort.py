@@ -65,7 +65,7 @@ def make_tree(max, storage, elements):
 
 def add_to_tree(tree, item):
     if tree.children:
-        add_to_parent_tree(tree, tree.lst.items, item)
+        tree.lst.append(item)
     else:
         add_to_simple_tree(tree, item)
 
@@ -83,9 +83,10 @@ class BranchList:
         self.items = items
         self.head = items[0].lst.head
         
-def add_to_parent_tree(tree, children, item):
-    pos = get_position(children, item)
-    add_to_tree(children[pos], item)
+    def append(self, item):
+        children = self.items
+        pos = get_position(children, item)
+        add_to_tree(children[pos], item)
 
 def add_to_simple_tree(tree, item):
     max = tree.max
