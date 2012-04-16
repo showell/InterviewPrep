@@ -18,7 +18,7 @@ class DiskList:
             self.head = item
         self.cnt += 1
         self.cache.append(item)
-        if self.cnt % 200 == 0:
+        if len(self.cache) == 1000:
             self.flush()
 
     def flush(self):
@@ -102,13 +102,17 @@ def add_to_simple_tree(tree, item):
 
 def split_tree(tree, lst, max, cnt):
     elements = sorted(lst.elements())
-    m = (cnt + 1) // 2
     storage = tree.storage
+    incr = (cnt + 1) // 10
     lst.close()
-    tree_0 = make_tree(max, storage, elements[0:m])
-    tree_1 = make_tree(max, storage, elements[m:cnt])
+    children = []
+    i = 0
+    while i < cnt:
+        child = make_tree(max, storage, elements[i:i+incr])
+        children.append(child)
+        i += incr
     tree.children = True
-    tree.lst = BranchList([tree_0, tree_1], lst.head, lst.cnt)
+    tree.lst = BranchList(children, lst.head, lst.cnt)
 
 def tree_visit(tree, visitor):
     lst = tree.lst
@@ -145,10 +149,9 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 20000
-    num_items = 20000000
-    # 10 million in 6 minutes
-    # 20 million in 11 minutes
+    chunk_size = 10000
+    num_items = 5000000
+    # 500k in 1:44
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
         add_to_tree(idx, n)
