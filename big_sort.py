@@ -107,11 +107,11 @@ def split_tree(tree, lst, max, cnt):
     tree.lst = BranchList([tree_0, tree_1])
 
 def tree_visit(tree, visitor):
+    lst = tree.lst
     if tree.children:
-        for idx in tree.lst.items:
+        for idx in lst.items:
             tree_visit(idx, visitor)
     else:
-        lst = tree.lst
         items = lst.elements()
         items.sort()
         print len(items), lst.fn, tree.max
