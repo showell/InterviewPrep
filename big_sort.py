@@ -145,9 +145,10 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 10000
-    num_items = 10000000
-    # 1000, 500000 -> 13s
+    chunk_size = 20000
+    num_items = 20000000
+    # 10 million in 6 minutes
+    # 20 million in 11 minutes
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
         add_to_tree(idx, n)
