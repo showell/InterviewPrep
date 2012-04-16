@@ -29,7 +29,7 @@ def make_tree(max, storage, elements):
     return {
         'fn': fn,
         'storage': storage,
-        'cnt': 0,
+        'cnt': len(elements),
         'children': None,
         'max': max,
         'head': head
@@ -85,13 +85,12 @@ def split_tree(tree, max, cnt):
 def tree_visit(tree, visitor):
     if tree['children']:
         for idx in tree['children']:
-            print '--'
             tree_visit(idx, visitor)
     else:
         fn = tree['fn']
         items = read_ints(fn)
         items.sort()
-        print fn, len(items)
+        print len(items), fn, tree['max']
         for item in items:
             visitor(item)
 
@@ -111,20 +110,42 @@ def make_visitor():
         order_assurer.visit(item)
     return visit
 
-def sample_data():
+def sample_data(num_items):
     for i in range(num_items):
         n = random.randint(1, 100000)
         yield n
 
-storage = Storage()
-chunk_size = 100
-num_items = 10000
-# 1000, 1000000 -> 165s, 44s
-# 1000, 500000 -> 78s, 20s
-# 100, 100000 -> 14s
-idx = make_root_tree(chunk_size, storage)
-for n in sample_data():
-    add_to_tree(idx, n)
+def test():
+    storage = Storage()
+    chunk_size = 500
+    num_items = 20000
+    # 1000, 1000000 -> 165s, 44s
+    # 1000, 500000 -> 78s, 20s
+    # 100, 100000 -> 14s
+    idx = make_root_tree(chunk_size, storage)
+    for n in sample_data(num_items):
+        add_to_tree(idx, n)
 
-tree_visit(idx, make_visitor())
+    tree_visit(idx, make_visitor())
     
+class DiskList:
+    def __init__(self, fn, elements):
+        self.fn = fn
+        f = open(self.fn, 'w')
+        for item in elements:
+            f.write(str(item) + '\n')
+        f.close()
+
+
+    def append(self, item):
+        f = open(self.fn, 'a')
+        f.write(str(item) + '\n')
+        f.close()
+
+    def elements(self):
+        fn = self.fn
+        elements = [int(line.strip()) for line in open(fn)]
+        return elements
+
+if __name__ == '__main__':
+    test()
