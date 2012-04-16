@@ -130,7 +130,7 @@ def add_to_simple_tree(tree, item):
 def split_tree(tree, lst, max, cnt):
     elements = sorted(lst.elements())
     storage = tree.storage
-    incr = (cnt + 1) // 10
+    incr = (cnt + 1) // 4
     lst.close()
     children = []
     i = 0
@@ -142,14 +142,14 @@ def split_tree(tree, lst, max, cnt):
     fn = storage.get_fn()
     tree.lst = BranchList(children, lst.head, lst.cnt, fn)
 
-def tree_visit(tree, visitor):
+def tree_visit(tree, visitor, depth = 0):
     lst = tree.lst
     if tree.children:
-        print lst.cnt, lst.fn
+        print '  ' * depth, lst.cnt, lst.fn
         for idx in lst.items:
-            tree_visit(idx, visitor)
+            tree_visit(idx, visitor, depth + 1)
     else:
-        print lst.cnt, lst.fn
+        print '  ' * depth, lst.cnt, lst.fn
         items = lst.elements()
         items.sort()
         # print len(items), lst.fn, tree.max
