@@ -135,9 +135,14 @@ class DiskList:
         for item in elements:
             f.write(str(item) + '\n')
         f.close()
-
+        self.cnt = len(elements)
+        if self.cnt > 0:
+            self.head = elements[0]
 
     def append(self, item):
+        if self.cnt == 0:
+            self.head = item
+        self.cnt += 1
         f = open(self.fn, 'a')
         f.write(str(item) + '\n')
         f.close()
@@ -147,5 +152,16 @@ class DiskList:
         elements = [int(line.strip()) for line in open(fn)]
         return elements
 
+def test_disk_list():
+    dl = DiskList('/tmp/foo', [5])
+    for i in range(10):
+        dl.append(i)
+    print dl.elements()
+    print dl.cnt
+    print dl.head
+
+
 if __name__ == '__main__':
-    test()
+    # test()
+    test_disk_list()
+
