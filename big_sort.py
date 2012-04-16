@@ -33,7 +33,7 @@ class DiskList:
         self.cnt += 1
         self.mem.alloc(1)
         self.cache.append(item)
-        if self.mem.cnt > 100000:
+        if len(self.cache) + self.mem.cnt > 300000:
             self.flush()
 
     def flush(self):
