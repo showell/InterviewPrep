@@ -8,40 +8,33 @@ class DiskList:
         self.cnt = len(elements)
         if self.cnt > 0:
             self.head = elements[0]
-        self.caching = True
-        if self.caching:
-            self.cache = elements
-        else:
-            f = open(self.fn, 'w')
-            for item in elements:
-                f.write(str(item) + '\n')
-            f.close()
+        self.cache = elements
+        f = open(self.fn, 'w')
+        f.close()
+        self.flush()
 
     def append(self, item):
         if self.cnt == 0:
             self.head = item
         self.cnt += 1
-        if self.caching:
-            self.cache.append(item)
-        else:
-            f = open(self.fn, 'a')
+        self.cache.append(item)
+
+    def flush(self):
+        f = open(self.fn, 'a')
+        for item in self.cache:
             f.write(str(item) + '\n')
-            f.close()
+        f.close()
+        self.cache = []
 
     def elements(self):
-        if self.caching:
-            return [int(item) for item in self.cache] # for now
-        else:
-            fn = self.fn
-            elements = [int(line.strip()) for line in open(fn)]
-            return elements
+        self.flush()
+        fn = self.fn
+        elements = [int(line.strip()) for line in open(fn)]
+        return elements
     
     def close(self):
-        if self.caching:
-            return # for now
-        else:
-            fn = self.fn
-            os.remove(fn)
+        fn = self.fn
+        os.remove(fn)
 
 class Storage:
     def __init__(self):
@@ -107,10 +100,10 @@ def split_tree(tree, lst, max, cnt):
     m = (cnt + 1) // 2
     storage = tree.storage
     head = lst.head
+    lst.close()
     tree_0 = make_tree(max, storage, elements[0:m])
     tree_1 = make_tree(max, storage, elements[m:cnt])
     tree.children = [tree_0, tree_1]
-    lst.close()
     tree.lst = Record()
     tree.lst.head = head
 
@@ -151,9 +144,7 @@ def test():
     storage = Storage()
     chunk_size = 1000
     num_items = 500000
-    # 1000, 1000000 -> 165s, 44s
-    # 1000, 500000 -> 78s, 20s
-    # 100, 100000 -> 14s
+    # 1000, 500000 -> 13s
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
         add_to_tree(idx, n)
