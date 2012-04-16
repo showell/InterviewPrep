@@ -13,6 +13,15 @@ class Memory:
         self.cnt -= cnt
 memory = Memory()
 
+class OrderAssurer:
+    def __init__(self):
+        self.prev = None
+
+    def visit(self, item):
+        if self.prev:
+            if self.prev > item:
+                raise Exception('sort is broken')
+        self.prev = item
 
 class DiskList:
     def __init__(self, fn, elements):
@@ -98,10 +107,11 @@ def get_position(children, item):
     return last
 
 class BranchList:
-    def __init__(self, items, head, cnt):
+    def __init__(self, items, head, cnt, fn):
         self.items = items
         self.head = head
         self.cnt = cnt
+        self.fn = fn
         
     def append(self, item):
         self.cnt += 1
@@ -129,29 +139,22 @@ def split_tree(tree, lst, max, cnt):
         children.append(child)
         i += incr
     tree.children = True
-    tree.lst = BranchList(children, lst.head, lst.cnt)
+    fn = storage.get_fn()
+    tree.lst = BranchList(children, lst.head, lst.cnt, fn)
 
 def tree_visit(tree, visitor):
     lst = tree.lst
     if tree.children:
+        print lst.cnt, lst.fn
         for idx in lst.items:
             tree_visit(idx, visitor)
     else:
+        print lst.cnt, lst.fn
         items = lst.elements()
         items.sort()
         # print len(items), lst.fn, tree.max
         for item in items:
             visitor(item)
-
-class OrderAssurer:
-    def __init__(self):
-        self.prev = None
-
-    def visit(self, item):
-        if self.prev:
-            if self.prev > item:
-                raise Exception('sort is broken')
-        self.prev = item
 
 class Visitor:
     def __init__(self): 
@@ -169,8 +172,8 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 20000
-    num_items = 20000000
+    chunk_size = 5000
+    num_items = 200000
     # 20 mill in 8:20
     # 5 mill in 2:00
     idx = make_root_tree(chunk_size, storage)
