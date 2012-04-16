@@ -2,6 +2,34 @@ import random
 import os
 import glob
 
+class DiskList:
+    def __init__(self, fn, elements):
+        self.fn = fn
+        f = open(self.fn, 'w')
+        for item in elements:
+            f.write(str(item) + '\n')
+        f.close()
+        self.cnt = len(elements)
+        if self.cnt > 0:
+            self.head = elements[0]
+
+    def append(self, item):
+        if self.cnt == 0:
+            self.head = item
+        self.cnt += 1
+        f = open(self.fn, 'a')
+        f.write(str(item) + '\n')
+        f.close()
+
+    def elements(self):
+        fn = self.fn
+        elements = [int(line.strip()) for line in open(fn)]
+        return elements
+    
+    def close(self):
+        fn = self.fn
+        os.remove(fn)
+
 class Storage:
     def __init__(self):
         for fn in glob.glob('/tmp/foo*'):
@@ -119,34 +147,6 @@ def test():
 
     tree_visit(idx, make_visitor())
     
-class DiskList:
-    def __init__(self, fn, elements):
-        self.fn = fn
-        f = open(self.fn, 'w')
-        for item in elements:
-            f.write(str(item) + '\n')
-        f.close()
-        self.cnt = len(elements)
-        if self.cnt > 0:
-            self.head = elements[0]
-
-    def append(self, item):
-        if self.cnt == 0:
-            self.head = item
-        self.cnt += 1
-        f = open(self.fn, 'a')
-        f.write(str(item) + '\n')
-        f.close()
-
-    def elements(self):
-        fn = self.fn
-        elements = [int(line.strip()) for line in open(fn)]
-        return elements
-    
-    def close(self):
-        fn = self.fn
-        os.remove(fn)
-
 def test_disk_list():
     dl = DiskList('/tmp/foo', [5])
     for i in range(10):
