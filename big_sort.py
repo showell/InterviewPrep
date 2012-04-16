@@ -139,7 +139,7 @@ def tree_visit(tree, visitor):
     else:
         items = lst.elements()
         items.sort()
-        print len(items), lst.fn, tree.max
+        # print len(items), lst.fn, tree.max
         for item in items:
             visitor(item)
 
@@ -170,7 +170,8 @@ def sample_data(num_items):
 def test():
     storage = Storage()
     chunk_size = 20000
-    num_items = 5000000
+    num_items = 20000000
+    # 20 mill in 8:20
     # 5 mill in 2:00
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
