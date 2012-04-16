@@ -79,11 +79,13 @@ def get_position(children, item):
     return last
 
 class BranchList:
-    def __init__(self, items):
+    def __init__(self, items, head, cnt):
         self.items = items
-        self.head = items[0].lst.head
+        self.head = head
+        self.cnt = cnt
         
     def append(self, item):
+        self.cnt += 1
         children = self.items
         pos = get_position(children, item)
         add_to_tree(children[pos], item)
@@ -104,7 +106,7 @@ def split_tree(tree, lst, max, cnt):
     tree_0 = make_tree(max, storage, elements[0:m])
     tree_1 = make_tree(max, storage, elements[m:cnt])
     tree.children = True
-    tree.lst = BranchList([tree_0, tree_1])
+    tree.lst = BranchList([tree_0, tree_1], lst.head, lst.cnt)
 
 def tree_visit(tree, visitor):
     lst = tree.lst
@@ -141,8 +143,8 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 1000
-    num_items = 500000
+    chunk_size = 100
+    num_items = 20000
     # 1000, 500000 -> 13s
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
