@@ -136,11 +136,14 @@ class OrderAssurer:
                 raise Exception('sort is broken')
         self.prev = item
 
-def make_visitor():
-    order_assurer = OrderAssurer()
-    def visit(item):
-        order_assurer.visit(item)
-    return visit
+class Visitor:
+    def __init__(self): 
+        self.order_assurer = OrderAssurer()
+        self.num_visited = 0
+
+    def visit(self, item):
+        self.order_assurer.visit(item)
+        self.num_visited += 1
 
 def sample_data(num_items):
     for i in range(num_items):
@@ -149,14 +152,16 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 10000
-    num_items = 5000000
-    # 500k in 1:44
+    chunk_size = 1000
+    num_items = 50000
+    # 5 mill in 1:44
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
         add_to_tree(idx, n)
 
-    tree_visit(idx, make_visitor())
+    visitor = Visitor()
+    tree_visit(idx, visitor.visit)
+    print visitor.num_visited
     
 def test_disk_list():
     dl = DiskList('/tmp/foo', [5])
