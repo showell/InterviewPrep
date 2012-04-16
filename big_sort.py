@@ -18,6 +18,8 @@ class DiskList:
             self.head = item
         self.cnt += 1
         self.cache.append(item)
+        if self.cnt % 200 == 0:
+            self.flush()
 
     def flush(self):
         f = open(self.fn, 'a')
@@ -143,8 +145,8 @@ def sample_data(num_items):
 
 def test():
     storage = Storage()
-    chunk_size = 100
-    num_items = 20000
+    chunk_size = 10000
+    num_items = 10000000
     # 1000, 500000 -> 13s
     idx = make_root_tree(chunk_size, storage)
     for n in sample_data(num_items):
